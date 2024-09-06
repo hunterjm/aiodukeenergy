@@ -57,6 +57,25 @@ class DukeEnergy:
         if self._created_session:
             await self.session.close()
 
+    async def authenticate(self) -> dict[str, Any]:
+        """Authenticate with Duke Energy."""
+        _LOGGER.debug("Fetching Auth Token")
+        response = await self.session.post(
+            _TOKEN_URL,
+            headers={"Authorization": f"Basic {_TOKEN_AUTH}"},
+            data={
+                "grant_type": "password",
+                "username": self.username,
+                "password": self.password,
+            },
+            timeout=self.timeout,
+        )
+        _LOGGER.debug("Response from %s: %s", _TOKEN_URL, response.status)
+        response.raise_for_status()
+        result = await response.json()
+        self._auth = result
+        return result
+
     async def get_accounts(self, fresh: bool = False) -> dict[str, Any]:
         """
         Get account details from Duke Energy.
@@ -244,17 +263,4 @@ class DukeEnergy:
         if self._auth and not reauth:
             return
 
-        _LOGGER.debug("Fetching Auth Token")
-        response = await self.session.post(
-            _TOKEN_URL,
-            headers={"Authorization": f"Basic {_TOKEN_AUTH}"},
-            data={
-                "grant_type": "password",
-                "username": self.username,
-                "password": self.password,
-            },
-            timeout=self.timeout,
-        )
-        _LOGGER.debug("Response from %s: %s", _TOKEN_URL, response.status)
-        response.raise_for_status()
-        self._auth = await response.json()
+        await self.authenticate()
