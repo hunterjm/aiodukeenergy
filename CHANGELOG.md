@@ -1,5 +1,11 @@
 # Changelog
 
+## v0.2.0 (2024-09-06)
+
+### Feature
+
+- Allow directly calling authenticate (#2) ([`cde5d87`](https://github.com/hunterjm/aiodukeenergy/commit/cde5d87daea32c40101cc7ef3cf8be7e9f257bbe))
+
 ## v0.1.0 (2024-09-06)
 
 ### Feature
