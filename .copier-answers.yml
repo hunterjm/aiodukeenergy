@@ -1,0 +1,21 @@
+# Changes here will be overwritten by Copier
+_commit: 7c035ec
+_src_path: gh:browniebroke/pypackage-template
+add_me_as_contributor: false
+copyright_year: '2024'
+documentation: true
+email: hunterjm@gmail.com
+full_name: Jason Hunter
+github_username: hunterjm
+has_cli: false
+initial_commit: false
+is_django_package: false
+open_source_license: MIT
+package_name: aiodukeenergy
+project_name: aiodukeenergy
+project_short_description: Asyncio Duke Energy
+project_slug: aiodukeenergy
+run_poetry_install: false
+setup_github: false
+setup_pre_commit: false
+
