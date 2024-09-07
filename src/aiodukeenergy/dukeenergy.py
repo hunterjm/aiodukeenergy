@@ -76,7 +76,7 @@ class DukeEnergy:
         self._auth = result
         return result
 
-    async def get_accounts(self, fresh: bool = False) -> dict[str, Any]:
+    async def get_accounts(self, fresh: bool = False) -> dict[str, dict[str, Any]]:
         """
         Get account details from Duke Energy.
 
@@ -117,7 +117,7 @@ class DukeEnergy:
         self._accounts = accounts
         return self._accounts
 
-    async def get_meters(self, fresh: bool = False) -> dict[str, Any]:
+    async def get_meters(self, fresh: bool = False) -> dict[str, dict[str, Any]]:
         """
         Get meter details from Duke Energy.
 
