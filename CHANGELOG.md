@@ -1,5 +1,11 @@
 # Changelog
 
+## v0.2.2 (2024-09-07)
+
+### Fix
+
+- Missing hours come back sometimes that we need to handle (#4) ([`5bd3836`](https://github.com/hunterjm/aiodukeenergy/commit/5bd38363f0661399d0ca65ea22a66a7dfcec9bf9))
+
 ## v0.2.1 (2024-09-07)
 
 ### Fix
