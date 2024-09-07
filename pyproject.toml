@@ -1,6 +1,6 @@
 [tool.poetry]
 name = "aiodukeenergy"
-version = "0.2.0"
+version = "0.2.1"
 description = "Asyncio Duke Energy"
 authors = ["Jason Hunter <hunterjm@gmail.com>"]
 license = "MIT"
