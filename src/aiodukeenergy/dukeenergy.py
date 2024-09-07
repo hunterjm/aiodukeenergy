@@ -213,17 +213,29 @@ class DukeEnergy:
 
         data = {}
         missing = []
+        offset = 0
         for i in range(num_values):
             delta = timedelta(hours=i) if interval == "HOURLY" else timedelta(days=i)
             date = start_date + delta
+            n = i - offset
 
-            if i >= energy_len or not energy[i] > 0:
+            expected_series = (
+                date.strftime("%I %p")
+                if interval == "HOURLY"
+                else date.strftime("%m/%d/%Y")
+            )
+            if result["TickSeries"][n] != expected_series:
+                missing.append(date)
+                offset += 1
+                continue
+
+            if n >= energy_len or not energy[n] > 0:
                 missing.append(date)
                 continue
 
             data[date] = {
-                "energy": energy[i] if i < energy_len else None,
-                "temperature": temp[i] if i < temp_len else None,
+                "energy": energy[n] if n < energy_len else None,
+                "temperature": temp[n] if n < temp_len else None,
             }
 
         return {"data": data, "missing": missing}

@@ -1,11 +1,38 @@
 import re
-from datetime import datetime, timezone
+from datetime import datetime, timedelta, timezone
 
 import aiohttp
 import pytest
 from aioresponses import aioresponses
 
 from aiodukeenergy import DukeEnergy
+
+_TICK_SERIES = [
+    "12 AM",
+    "01 AM",
+    "02 AM",
+    "03 AM",
+    "04 AM",
+    "05 AM",
+    "06 AM",
+    "07 AM",
+    "08 AM",
+    "09 AM",
+    "10 AM",
+    "11 AM",
+    "12 PM",
+    "01 PM",
+    "02 PM",
+    "03 PM",
+    "04 PM",
+    "05 PM",
+    "06 PM",
+    "07 PM",
+    "08 PM",
+    "09 PM",
+    "10 PM",
+    "11 PM",
+]
 
 
 @pytest.mark.asyncio
@@ -117,18 +144,23 @@ async def test_simple_requests():
             payload={
                 "Series1": list(range(31 * 24)),
                 "Series3": list(range(31)),
+                "TickSeries": _TICK_SERIES[:2] + _TICK_SERIES[3:] + (_TICK_SERIES * 30),
                 "MissingDataError": "",
             },
         )
+        start = datetime.strptime("2024-01-01", "%Y-%m-%d")
+        end = datetime.strptime("2024-01-31", "%Y-%m-%d")
         result = await client.get_energy_usage(
             serial_number,
             "HOURLY",
             "DAY",
-            datetime.strptime("2024-01-01", "%Y-%m-%d"),
-            datetime.strptime("2024-01-31", "%Y-%m-%d"),
+            start,
+            end,
         )
         # 0 range for energy gets put into missing
-        assert len(result["data"]) == (31 * 24) - 1
-        assert len(result["missing"]) == 1
+        assert len(result["data"]) == (31 * 24) - 2
+        assert len(result["missing"]) == 2
+        assert result["missing"][0] == start
+        assert result["missing"][1] == start + timedelta(hours=2)
         assert list(result["data"].values())[-1].get("temperature") == 30
         await client.close()
