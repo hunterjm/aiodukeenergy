@@ -198,9 +198,12 @@ class DukeEnergy:
         # map results to an object from start to end date by interval with values from
         # result["Series1"] array for energy and result["Series3"] array for temperature
         # first, loop through a range of dates from start to end date by interval
+        tick_series = result["TickSeries"]
         energy = result["Series1"]
-        energy_len = len(energy)
         temp = result["Series3"]
+
+        tick_series, energy, temp = _remove_duplicates(tick_series, energy, temp)
+        energy_len = len(energy)
         temp_len = len(temp)
         num_values = (end_date - start_date).days + 1
 
@@ -224,7 +227,7 @@ class DukeEnergy:
                 if interval == "HOURLY"
                 else date.strftime("%m/%d/%Y")
             )
-            if result["TickSeries"][n] != expected_series:
+            if tick_series[n] != expected_series:
                 missing.append(date)
                 offset += 1
                 continue
@@ -260,6 +263,26 @@ class DukeEnergy:
         json = await response.json()
         _LOGGER.debug("JSON from %s: %s", url, json)
         return json
+
+    def _remove_duplicates(
+        tick_series: List[str], 
+        energy: List[str], 
+        temp: List[str]
+    ) -> Tuple[List[str], List[str], List[str]]:
+        """Detects and removes duplicate reporting times and their respective data entries. """
+        seen = set()
+        new_tick_series = []
+        new_energy = []
+        new_temp = []
+        for i, item in enumerate(tick_series):
+            if item not in seen:
+                seen.add(item)
+                new_tick_series.append(item)
+                if energy:
+                    new_energy.append(energy[i])
+                if temp:
+                    new_temp.append(temp[i])
+        return new_tick_series, new_energy, new_temp
 
     async def _validate_auth(self) -> None:
         """Validate the authentication tokens and fetch new ones if necessary."""
