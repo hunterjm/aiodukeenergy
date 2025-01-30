@@ -69,7 +69,7 @@ async def test_simple_requests():
         assert client.password == "passwd"  # noqa: S105
         assert client._created_session is True
         mocked.post(
-            "https://prod.apigee.duke-energy.app/gep/v2/auth-oauth2/token",
+            "https://api-v2.cma.duke-energy.app/login-services/auth-token",
             payload={
                 "refresh_token_expires_in": "86399",
                 "issued_at": str(int(datetime.now(timezone.utc).timestamp() * 1000)),
@@ -97,7 +97,7 @@ async def test_simple_requests():
             },
         )
         pattern = re.compile(
-            r"^https://prod.apigee\.duke-energy\.app/gep/v2/auth-services/account-list"
+            r"^https://api-v2\.cma\.duke-energy\.app/login-services/account-list"
         )
         mocked.get(
             pattern,
@@ -118,7 +118,7 @@ async def test_simple_requests():
             },
         )
         pattern = re.compile(
-            r"^https://prod.apigee\.duke-energy\.app/gep/v2/auth-services/account-details-v2"
+            r"^https://api-v2\.cma\.duke-energy\.app/login-services/account-details-v2"
         )
         mocked.get(
             pattern,
@@ -137,7 +137,7 @@ async def test_simple_requests():
         meters = await client.get_meters()
         serial_number = next(iter(meters.keys()))
         pattern = re.compile(
-            r"^https://prod.apigee\.duke-energy\.app/gep/v2/auth-services/energy-usage-graph.*meterSerialNumber="
+            r"^https://api-v2\.cma\.duke-energy\.app/login-services/account/usage/graph.*meterSerialNumber="
         )
         mocked.get(
             pattern,
