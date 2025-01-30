@@ -8,13 +8,13 @@ from typing import Any, Literal
 import aiohttp
 import yarl
 
-_BASE_URL = yarl.URL("https://prod.apigee.duke-energy.app/gep/v2")
-_SERVICES_URL = _BASE_URL.joinpath("auth-services")
+_BASE_URL = yarl.URL("https://api-v2.cma.duke-energy.app")
+_SERVICES_URL = _BASE_URL.joinpath("login-services")
 
-# Client ID and Secret are from the Android app
-_TOKEN_URL = _BASE_URL.joinpath("auth-oauth2", "token")
-_CLIENT_ID = "g3c4MJTD3lciM2UoJA8CZkBIM87ckAkRXxeK5HpuzL5iVN28"
-_CLIENT_SECRET = "w4O5CxynH0M4zzRhCOaFyKplHV50GnQYyR2rxDbMBsUQ9qYlVOGRYuHg7hiXKtje"  # noqa: S105
+# Client ID and Secret are from the iOS app
+_TOKEN_URL = _BASE_URL.joinpath("login-services", "auth-token")
+_CLIENT_ID = "ShOncX64eXKHMt4IVaaLz9bPxhmCp2y27rvxK3ZLXFnPA2BF"
+_CLIENT_SECRET = "J3eHfLDJVDZL8TSNjBbcgOkBmLQPfGDXqffLEgBKj8orXkwEueK6xxEA7fDM0fQ6"  # noqa: S105
 _TOKEN_AUTH = base64.b64encode(f"{_CLIENT_ID}:{_CLIENT_SECRET}".encode()).decode()
 
 _DATE_FORMAT = "%m/%d/%Y"
@@ -169,7 +169,7 @@ class DukeEnergy:
             raise ValueError(f"Meter {serial_number} not found")
 
         result = await self._get_json(
-            _SERVICES_URL.joinpath("energy-usage-graph"),
+            _SERVICES_URL.joinpath("account", "usage", "graph"),
             {
                 "srcSysCd": meter["account"]["srcSysCd"],
                 "srcAcctId": meter["account"]["srcAcctId"],
