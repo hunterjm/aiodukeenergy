@@ -9,7 +9,6 @@ import aiohttp
 import yarl
 
 _BASE_URL = yarl.URL("https://api-v2.cma.duke-energy.app")
-_SERVICES_URL = _BASE_URL.joinpath("login-services")
 
 # Client ID and Secret are from the iOS app
 _TOKEN_URL = _BASE_URL.joinpath("login-services", "auth-token")
@@ -89,7 +88,7 @@ class DukeEnergy:
             await self._validate_auth()
 
         account_list = await self._get_json(
-            _SERVICES_URL.joinpath("account-list"),
+            _BASE_URL.joinpath("account-list"),
             {
                 "email": self.email,
                 "internalUserID": self.internal_user_id,
@@ -100,7 +99,7 @@ class DukeEnergy:
         accounts = {}
         for account in account_list["accounts"]:
             details = await self._get_json(
-                _SERVICES_URL.joinpath("account-details-v2"),
+                _BASE_URL.joinpath("account-details-v2"),
                 {
                     "email": self.email,
                     "srcSysCd": account["srcSysCd"],
@@ -169,7 +168,7 @@ class DukeEnergy:
             raise ValueError(f"Meter {serial_number} not found")
 
         result = await self._get_json(
-            _SERVICES_URL.joinpath("account", "usage", "graph"),
+            _BASE_URL.joinpath("account", "usage", "graph"),
             {
                 "srcSysCd": meter["account"]["srcSysCd"],
                 "srcAcctId": meter["account"]["srcAcctId"],
