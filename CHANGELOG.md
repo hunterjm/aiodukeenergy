@@ -1,5 +1,11 @@
 # Changelog
 
+## v0.3.0 (2025-03-28)
+
+### Feature
+
+- Implement new api response and fix duplicate hour handling (#9) ([`ebfeaab`](https://github.com/hunterjm/aiodukeenergy/commit/ebfeaab8c2806abdba13cb1ae8e376039b37caf7))
+
 ## v0.2.3 (2025-03-28)
 
 ### Style
