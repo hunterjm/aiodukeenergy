@@ -44,12 +44,12 @@ class DukeEnergy:
     @property
     def internal_user_id(self) -> str | None:
         """Get the internal user ID from auth response."""
-        return self._auth.get("cdp_internal_user_id") if self._auth else None
+        return self._auth.get("internalUserID") if self._auth else None
 
     @property
     def email(self) -> str | None:
         """Get the email from auth response."""
-        return self._auth.get("email") if self._auth else None
+        return self._auth.get("loginEmailAddress") if self._auth else None
 
     async def close(self) -> None:
         """Close the SolarEdge API client."""
@@ -194,27 +194,37 @@ class DukeEnergy:
                 "showYear": "true",
             },
         )
-        # map results to an object from start to end date by interval with values from
-        # result["Series1"] array for energy and result["Series3"] array for temperature
-        # first, loop through a range of dates from start to end date by interval
-        energy = result["Series1"]
-        energy_len = len(energy)
-        temp = result["Series3"]
-        temp_len = len(temp)
-        num_values = (end_date - start_date).days + 1
 
-        # if interval is hourly, multiply the number of values by 24 and repeat the
-        # temperature values for each hour
+        # result is an object with a single key "usageArray" which is an array of
+        # objects with keys "usage", "date", and "temperatureAvg"
+        # map results to an object from start to end date by interval
+        usage_array = result["usageArray"]
+        usage_len = len(usage_array)
+        num_expected_values = (end_date - start_date).days + 1
+
+        # Extract temperature data into a separate list from the usage array
+        temp = [usage_array[i]["temperatureAvg"] for i in range(num_expected_values)]
+        temp_len = len(temp)
+
+        # if interval is hourly, multiply the number of values by 24
         if interval == "HOURLY":
-            num_values = num_values * 24
+            num_expected_values = num_expected_values * 24
             temp = [t for t in temp for _ in range(24)]
             temp_len = len(temp)
+
+        # Take the max of the actual number of values and the expected number of values
+        num_values = max(usage_len, num_expected_values)
 
         data = {}
         missing = []
         offset = 0
+        duplicates = 0
         for i in range(num_values):
-            delta = timedelta(hours=i) if interval == "HOURLY" else timedelta(days=i)
+            delta = (
+                timedelta(hours=i - duplicates)
+                if interval == "HOURLY"
+                else timedelta(days=i)
+            )
             date = start_date + delta
             n = i - offset
 
@@ -223,17 +233,24 @@ class DukeEnergy:
                 if interval == "HOURLY"
                 else date.strftime("%m/%d/%Y")
             )
-            if result["TickSeries"][n] != expected_series:
+
+            # Skip duplicate dates
+            if n > 0 and usage_array[n]["date"] == usage_array[n - 1]["date"]:
+                duplicates += 1
+                continue
+
+            # Skip missing dates
+            if usage_array[n]["date"] != expected_series:
                 missing.append(date)
                 offset += 1
                 continue
 
-            if n >= energy_len or not energy[n] > 0:
+            if n >= usage_len or not float(usage_array[n]["usage"]) > 0:
                 missing.append(date)
                 continue
 
             data[date] = {
-                "energy": energy[n] if n < energy_len else None,
+                "energy": float(usage_array[n]["usage"]),
                 "temperature": temp[n] if n < temp_len else None,
             }
 
@@ -264,7 +281,7 @@ class DukeEnergy:
         """Validate the authentication tokens and fetch new ones if necessary."""
         if self._auth:
             issued_at = datetime.fromtimestamp(
-                int(self._auth["issued_at"]) / 1000, timezone.utc
+                int(self._auth["issued_at"]), timezone.utc
             )
             expires_in = int(self._auth["expires_in"])
             reauth = issued_at + timedelta(seconds=expires_in) < datetime.now(
