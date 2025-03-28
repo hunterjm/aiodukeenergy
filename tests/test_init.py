@@ -23,6 +23,7 @@ def mock_auth_response():
         "refresh_token_issued_at": str(int(datetime.now(timezone.utc).timestamp())),
         "expires_in": "1199",
         "refresh_count": "0",
+        "email": "TEST@EXAMPLE.COM",
         "cdp_login_identity": "test",
         "onlineExperienceName": "SC_RESIDENTIAL",
         "cdp_message_text": "Success",
@@ -143,6 +144,62 @@ def mock_daily_usage_data():
         )
 
     return daily_data
+
+
+@pytest.fixture
+def mock_duplicate_hours_data():
+    """Create mock usage data with duplicate hours (simulating DST fall back)."""
+    # Create time formats
+    hour_formats = [
+        "12 AM",
+        "01 AM",
+        "02 AM",
+        "03 AM",
+        "04 AM",
+        "05 AM",
+        "06 AM",
+        "07 AM",
+        "08 AM",
+        "09 AM",
+        "10 AM",
+        "11 AM",
+        "12 PM",
+        "01 PM",
+        "02 PM",
+        "03 PM",
+        "04 PM",
+        "05 PM",
+        "06 PM",
+        "07 PM",
+        "08 PM",
+        "09 PM",
+        "10 PM",
+        "11 PM",
+    ]
+
+    hourly_data = []
+    for day in range(2):  # Just use 2 days for this test
+        for hour in range(24):
+            idx = day * 24 + hour
+
+            # Add the regular entry
+            hourly_data.append(
+                {"date": hour_formats[hour], "usage": str(idx), "temperatureAvg": 30}
+            )
+
+            # For day 1, we'll duplicate the 1 AM hour (index 1) to simulate DST
+            # Both entries will have the same time string but different usage values
+            if day == 1 and hour == 1:
+                # Second 1 AM entry (the duplicate/repeated hour)
+                hourly_data.append(
+                    {
+                        "date": hour_formats[hour],
+                        "usage": str(900),  # Special value for the duplicate hour
+                        "temperatureAvg": 25,
+                    }
+                )
+
+    return hourly_data
 
 
 def setup_mocked_responses(
@@ -364,5 +421,90 @@ async def test_daily_energy_usage(
             if last_day in result["data"]:
                 assert result["data"][last_day]["energy"] == 300.0
                 assert result["data"][last_day]["temperature"] == 30
+
+        await client.close()
+
+
+@pytest.mark.asyncio
+async def test_energy_usage_duplicate_hours(
+    mock_auth_response,
+    mock_account_list_response,
+    mock_account_details_response,
+    mock_duplicate_hours_data,
+):
+    """Test energy usage handling duplicate hours (like during DST changes)."""
+    with aioresponses() as mocked:
+        client = DukeEnergy("test", "passwd")
+
+        # Mock auth and account responses
+        mocked.post(
+            "https://api-v2.cma.duke-energy.app/login-services/auth-token",
+            payload=mock_auth_response,
+        )
+
+        pattern = re.compile(r"^https://api-v2\.cma\.duke-energy\.app/account-list")
+        mocked.get(pattern, payload=mock_account_list_response)
+
+        pattern = re.compile(
+            r"^https://api-v2\.cma\.duke-energy\.app/account-details-v2"
+        )
+        mocked.get(pattern, payload=mock_account_details_response)
+
+        # Mock usage graph with duplicate hour data
+        pattern = re.compile(
+            r"^https://api-v2\.cma\.duke-energy\.app/account/usage/graph.*meterSerialNumber="
+        )
+        mocked.get(pattern, payload={"usageArray": mock_duplicate_hours_data})
+
+        # Get meters
+        meters = await client.get_meters()
+        serial_number = next(iter(meters.keys()))
+
+        # Query for energy usage - use a 2-day period to keep the test focused
+        start = datetime.strptime("2024-01-01", "%Y-%m-%d")
+        end = datetime.strptime("2024-01-02", "%Y-%m-%d")
+        result = await client.get_energy_usage(
+            serial_number,
+            "HOURLY",
+            "DAY",
+            start,
+            end,
+        )
+
+        # Check results
+
+        # We should have 48 hours of data (2 days), minus 1 for the duplicate
+        expected_data_count = (2 * 24) - 1
+        assert (
+            len(result["data"]) == expected_data_count
+        ), f"Expected {expected_data_count} data points, got {len(result['data'])}"
+
+        # The duplicate hour should have been skipped and not appear in the data
+        # The implementation should correctly handle this by incrementing the duplicates
+        day2_1am = start + timedelta(days=1, hours=1)
+        day2_2am = start + timedelta(days=1, hours=2)
+
+        # Check that we have the 2 AM data point
+        assert day2_2am in result["data"], "Should have 2 AM data point on day 2"
+
+        # For our 1 AM data point, we should have the regular value, not the duplicate
+        # Since the implementation skips duplicates and keeps the first occurrence
+        if day2_1am in result["data"]:
+            energy_value = result["data"][day2_1am]["energy"]
+            assert (
+                energy_value != 900.0
+            ), "Should not have the duplicate hour value (900.0)"
+            assert (
+                energy_value == 25.0
+            ), f"Expected energy value of 25.0 (day 1, hour 1), got {energy_value}"
+
+        # Verify that all timestamps are sequential and we don't have any duplicates
+        timestamps = sorted(result["data"].keys())
+        for i in range(1, len(timestamps)):
+            time_diff = timestamps[i] - timestamps[i - 1]
+            # In hours mode, consecutive timestamps should be 1 hour apart
+            assert time_diff == timedelta(
+                hours=1
+            ), f"Expected 1 hour difference between timestamps, got {time_diff}"
 
         await client.close()
