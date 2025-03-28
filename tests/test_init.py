@@ -96,9 +96,7 @@ async def test_simple_requests():
                 "status": "approved",
             },
         )
-        pattern = re.compile(
-            r"^https://api-v2\.cma\.duke-energy\.app/account-list"
-        )
+        pattern = re.compile(r"^https://api-v2\.cma\.duke-energy\.app/account-list")
         mocked.get(
             pattern,
             payload={
