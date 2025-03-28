@@ -1,5 +1,15 @@
 # Changelog
 
+## v0.2.3 (2025-03-28)
+
+### Style
+
+- Apply ruff format ([`cccb745`](https://github.com/hunterjm/aiodukeenergy/commit/cccb745bab712c7c06e18872e490637a8d418a86))
+
+### Fix
+
+- Update deprecated paths (#8) ([`7509d34`](https://github.com/hunterjm/aiodukeenergy/commit/7509d34a96edd7c17f5720c89f77fe68a0306302))
+
 ## v0.2.2 (2024-09-07)
 
 ### Fix
