@@ -12,8 +12,8 @@ _BASE_URL = yarl.URL("https://api-v2.cma.duke-energy.app")
 
 # Client ID and Secret are from the iOS app
 _TOKEN_URL = _BASE_URL.joinpath("login-services", "auth-token")
-_CLIENT_ID = "ShOncX64eXKHMt4IVaaLz9bPxhmCp2y27rvxK3ZLXFnPA2BF"
-_CLIENT_SECRET = "J3eHfLDJVDZL8TSNjBbcgOkBmLQPfGDXqffLEgBKj8orXkwEueK6xxEA7fDM0fQ6"  # noqa: S105
+_CLIENT_ID = "dCEIvZWA7BJcuhmjBFJlhCuHCd6bTGhkmbHP0XCrmAt6nSl0"
+_CLIENT_SECRET = "ua9DBZlebcFC334OhZIJPlNNnqWaKRnrq7ySTDGV2lVq5U9AweQb8XqVhc43vEIp"  # noqa: S105
 _TOKEN_AUTH = base64.b64encode(f"{_CLIENT_ID}:{_CLIENT_SECRET}".encode()).decode()
 
 _DATE_FORMAT = "%m/%d/%Y"
