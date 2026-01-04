@@ -176,6 +176,59 @@ def mock_daily_usage_data():
     return daily_data
 
 
+@pytest.fixture
+def mock_duplicate_hours_data():
+    """Create mock usage data with duplicate hours (simulating DST fall back)."""
+    hour_formats = [
+        "12 AM",
+        "01 AM",
+        "02 AM",
+        "03 AM",
+        "04 AM",
+        "05 AM",
+        "06 AM",
+        "07 AM",
+        "08 AM",
+        "09 AM",
+        "10 AM",
+        "11 AM",
+        "12 PM",
+        "01 PM",
+        "02 PM",
+        "03 PM",
+        "04 PM",
+        "05 PM",
+        "06 PM",
+        "07 PM",
+        "08 PM",
+        "09 PM",
+        "10 PM",
+        "11 PM",
+    ]
+
+    hourly_data = []
+    for day in range(2):  # Just use 2 days for this test
+        for hour in range(24):
+            idx = day * 24 + hour
+
+            # Add the regular entry
+            hourly_data.append(
+                {"date": hour_formats[hour], "usage": str(idx), "temperatureAvg": 30}
+            )
+
+            # For day 1, duplicate the 1 AM hour to simulate DST fall back
+            if day == 1 and hour == 1:
+                hourly_data.append(
+                    {
+                        "date": hour_formats[hour],
+                        "usage": str(900),  # Special value for the duplicate hour
+                        "temperatureAvg": 25,
+                    }
+                )
+
+    return hourly_data
+
+
 def setup_api_mocks(mocked, account_list, account_details, usage_data=None):
     """Set up the mocked responses for Duke Energy API."""
     # Mock account list
@@ -612,6 +665,77 @@ class TestUsageAPI:
                 missing_day = start + timedelta(days=2)
                 assert missing_day in result["missing"]
 
+    @pytest.mark.asyncio
+    async def test_energy_usage_duplicate_hours(
+        self,
+        mock_duke_token_response,
+        mock_account_list_response,
+        mock_account_details_response,
+        mock_duplicate_hours_data,
+    ):
+        """Test energy usage handling duplicate hours (like during DST changes)."""
+        test_token = _create_test_jwt(exp_offset_seconds=3600)
+        test_id_token = _create_test_jwt(exp_offset_seconds=3600)
+
+        async with aiohttp.ClientSession() as session:
+            auth0_client = Auth0Client(session)
+            auth = DukeEnergyAuth(
+                session,
+                auth0_client,
+                access_token=test_token,
+                refresh_token="refresh",  # noqa: S106
+                id_token=test_id_token,
+            )
+
+            with aioresponses() as mocked:
+                setup_auth_mocks(mocked, mock_duke_token_response)
+                setup_api_mocks(
+                    mocked,
+                    mock_account_list_response,
+                    mock_account_details_response,
+                    mock_duplicate_hours_data,
+                )
+
+                client = DukeEnergy(auth)
+
+                # Get meters first
+                meters = await client.get_meters()
+                serial_number = next(iter(meters.keys()))
+
+                # Query for energy usage - use a 2-day period
+                start = datetime.strptime("2024-01-01", "%Y-%m-%d")
+                end = datetime.strptime("2024-01-02", "%Y-%m-%d")
+                result = await client.get_energy_usage(
+                    serial_number,
+                    "HOURLY",
+                    "DAY",
+                    start,
+                    end,
+                )
+
+                # We should have 48 hours of data (2 days), minus 1 for the duplicate
+                expected_data_count = (2 * 24) - 1
+                assert len(result["data"]) == expected_data_count, (
+                    f"Expected {expected_data_count} data points, "
+                    f"got {len(result['data'])}"
+                )
+
+                # Verify all timestamps are sequential (no duplicates)
+                timestamps = sorted(result["data"].keys())
+                for i in range(1, len(timestamps)):
+                    time_diff = timestamps[i] - timestamps[i - 1]
+                    assert time_diff == timedelta(
+                        hours=1
+                    ), f"Expected 1 hour difference, got {time_diff}"
+
+                # The 1 AM on day 2 should have the first value, not the duplicate
+                day2_1am = start + timedelta(days=1, hours=1)
+                if day2_1am in result["data"]:
+                    energy_value = result["data"][day2_1am]["energy"]
+                    assert (
+                        energy_value != 900.0
+                    ), "Should not have the duplicate hour value (900.0)"
+
 
 class TestErrorHandling:
     """Tests for error handling."""
@@ -648,6 +772,140 @@ class TestErrorHandling:
 
             with pytest.raises(DukeEnergyTokenExpiredError):
                 await auth.async_get_id_token()
+
+    @pytest.mark.asyncio
+    async def test_auth0_token_exchange_failure(self):
+        """Test Auth0 token exchange returns error on failure."""
+        from aiodukeenergy import DukeEnergyAuthError
+
+        async with aiohttp.ClientSession() as session:
+            auth0_client = Auth0Client(session)
+            auth = DukeEnergyAuth(session, auth0_client)
+
+            with aioresponses() as mocked:
+                # Mock Auth0 token endpoint with error
+                mocked.post(
+                    "https://login.duke-energy.com/oauth/token",
+                    status=400,
+                    payload={"error": "invalid_grant"},
+                )
+
+                with pytest.raises(DukeEnergyAuthError, match="Token exchange failed"):
+                    await auth.authenticate_with_code("bad_code", "verifier")
+
+    @pytest.mark.asyncio
+    async def test_duke_energy_token_exchange_failure(self, mock_auth0_token_response):
+        """Test Duke Energy token exchange returns error on failure."""
+        from aiodukeenergy import DukeEnergyAuthError
+
+        async with aiohttp.ClientSession() as session:
+            auth0_client = Auth0Client(session)
+            auth = DukeEnergyAuth(session, auth0_client)
+
+            with aioresponses() as mocked:
+                # Mock Auth0 token endpoint success
+                mocked.post(
+                    "https://login.duke-energy.com/oauth/token",
+                    payload=mock_auth0_token_response,
+                )
+                # Mock Duke Energy API token exchange with error
+                mocked.post(
+                    "https://api-v2.cma.duke-energy.app/login/auth-token",
+                    status=401,
+                    payload={"error": "unauthorized"},
+                )
+
+                with pytest.raises(
+                    DukeEnergyAuthError, match="Duke Energy token exchange failed"
+                ):
+                    await auth.authenticate_with_code("test_code", "verifier")
+
+    @pytest.mark.asyncio
+    async def test_auth0_token_refresh_failure(self):
+        """Test Auth0 token refresh returns error on failure."""
+        from aiodukeenergy import DukeEnergyTokenExpiredError
+
+        expired_token = _create_test_jwt(exp_offset_seconds=-3600)
+        expired_id_token = _create_test_jwt(exp_offset_seconds=-3600)
+
+        async with aiohttp.ClientSession() as session:
+            auth0_client = Auth0Client(session)
+            auth = DukeEnergyAuth(
+                session,
+                auth0_client,
+                access_token=expired_token,
+                id_token=expired_id_token,
+                refresh_token="refresh_token",  # noqa: S106
+            )
+
+            with aioresponses() as mocked:
+                # Mock Auth0 refresh endpoint with error
+                mocked.post(
+                    "https://login.duke-energy.com/oauth/token",
+                    status=400,
+                    payload={"error": "invalid_grant"},
+                )
+
+                with pytest.raises(DukeEnergyTokenExpiredError, match="Token refresh"):
+                    await auth.async_get_id_token()
+
+
+class TestUtilityFunctions:
+    """Tests for utility functions."""
+
+    def test_extract_code_from_url_valid(self):
+        """Test extracting authorization code from valid redirect URL."""
+        from aiodukeenergy.auth0 import extract_code_from_url
+
+        url = "cma-prod://login.duke-energy.com/callback?code=abc123&state=xyz"
+        code = extract_code_from_url(url)
+        assert code == "abc123"
+
+    def test_extract_code_from_url_no_code(self):
+        """Test extracting authorization code when not present."""
+        from aiodukeenergy.auth0 import extract_code_from_url
+
+        url = "cma-prod://login.duke-energy.com/callback?state=xyz"
+        code = extract_code_from_url(url)
+        assert code is None
+
+    def test_extract_code_from_url_with_ampersand(self):
+        """Test extracting authorization code with trailing parameters."""
+        from aiodukeenergy.auth0 import extract_code_from_url
+
+        url = "cma-prod://callback?code=test_code_123&state=abc&other=param"
+        code = extract_code_from_url(url)
+        assert code == "test_code_123"
+
+    def test_is_token_expired_valid_token(self):
+        """Test is_token_expired with a valid non-expired token."""
+        from aiodukeenergy.auth0 import is_token_expired
+
+        token = _create_test_jwt(exp_offset_seconds=3600)  # 1 hour in future
+        assert is_token_expired(token) is False
+
+    def test_is_token_expired_expired_token(self):
+        """Test is_token_expired with an expired token."""
+        from aiodukeenergy.auth0 import is_token_expired
+
+        token = _create_test_jwt(exp_offset_seconds=-3600)  # 1 hour ago
+        assert is_token_expired(token) is True
+
+    def test_is_token_expired_invalid_token(self):
+        """Test is_token_expired with an invalid token."""
+        from aiodukeenergy.auth0 import is_token_expired
+
+        assert is_token_expired("invalid.token") is True
+        assert is_token_expired("") is True
+
+    def test_decode_token(self):
+        """Test decode_token returns payload."""
+        from aiodukeenergy.auth0 import decode_token
+
+        token = _create_test_jwt()
+        payload = decode_token(token)
+        assert payload["email"] == "TEST@EXAMPLE.COM"
+        assert payload["internal_identifier"] == "DUKE_TEST_USER"
 
 
 class TestImports:
