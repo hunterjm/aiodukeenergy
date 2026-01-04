@@ -898,6 +898,17 @@ class TestUtilityFunctions:
         assert is_token_expired("invalid.token") is True
         assert is_token_expired("") is True
 
+    def test_is_token_expired_no_exp_claim(self):
+        """Test is_token_expired with token missing exp claim."""
+        import jwt as pyjwt
+
+        from aiodukeenergy.auth0 import is_token_expired
+
+        # Create token without exp claim
+        payload = {"email": "test@example.com"}
+        token = pyjwt.encode(payload, "secret", algorithm="HS256")
+        assert is_token_expired(token) is True
+
     def test_decode_token(self):
         """Test decode_token returns payload."""
         from aiodukeenergy.auth0 import decode_token
@@ -906,6 +917,148 @@ class TestUtilityFunctions:
         payload = decode_token(token)
         assert payload["email"] == "TEST@EXAMPLE.COM"
         assert payload["internal_identifier"] == "DUKE_TEST_USER"
+
+
+class TestAuth0Client:
+    """Tests for Auth0Client class."""
+
+    @pytest.mark.asyncio
+    async def test_exchange_code_without_verifier(self):
+        """Test exchange_code raises error when verifier not set."""
+        from aiodukeenergy import Auth0Client, DukeEnergyAuthError
+
+        async with aiohttp.ClientSession() as session:
+            auth0 = Auth0Client(session)
+            # Don't call get_authorization_url first, so no verifier is set
+            with pytest.raises(DukeEnergyAuthError, match="Code verifier not set"):
+                await auth0.exchange_code("test_code")
+
+    @pytest.mark.asyncio
+    async def test_get_user_info(self):
+        """Test getting user info from Auth0."""
+        from aiodukeenergy import Auth0Client
+
+        async with aiohttp.ClientSession() as session:
+            auth0 = Auth0Client(session)
+
+            with aioresponses() as mocked:
+                mocked.get(
+                    "https://login.duke-energy.com/userinfo",
+                    payload={"email": "test@example.com", "sub": "user123"},
+                )
+
+                user_info = await auth0.get_user_info("test_access_token")
+                assert user_info["email"] == "test@example.com"
+                assert user_info["sub"] == "user123"
+
+
+class TestDukeEnergyAuthTokenManagement:
+    """Tests for DukeEnergyAuth token management."""
+
+    @pytest.mark.asyncio
+    async def test_token_property_returns_none_when_not_authenticated(self):
+        """Test token property returns None when not authenticated."""
+        from aiodukeenergy import Auth0Client, DukeEnergyAuth
+
+        async with aiohttp.ClientSession() as session:
+            auth0 = Auth0Client(session)
+            auth = DukeEnergyAuth(session, auth0)
+            assert auth.token is None
+
+    @pytest.mark.asyncio
+    async def test_restore_token(self):
+        """Test restore_token restores tokens and user info."""
+        from aiodukeenergy import Auth0Client, DukeEnergyAuth
+
+        async with aiohttp.ClientSession() as session:
+            auth0 = Auth0Client(session)
+            auth = DukeEnergyAuth(session, auth0)
+
+            # Create token data with valid JWT for user info extraction
+            id_token = _create_test_jwt()
+            token_data = {
+                "access_token": "restored_access",
+                "refresh_token": "restored_refresh",
+                "id_token": id_token,
+            }
+
+            auth.restore_token(token_data)
+
+            assert auth.token is not None
+            assert auth.token["access_token"] == "restored_access"  # noqa: S105
+            assert auth.token["refresh_token"] == "restored_refresh"  # noqa: S105
+            assert auth.email == "TEST@EXAMPLE.COM"
+            assert auth.internal_user_id == "DUKE_TEST_USER"
+
+    @pytest.mark.asyncio
+    async def test_restore_token_with_invalid_id_token(self):
+        """Test restore_token handles invalid id_token gracefully."""
+        from aiodukeenergy import Auth0Client, DukeEnergyAuth
+
+        async with aiohttp.ClientSession() as session:
+            auth0 = Auth0Client(session)
+            auth = DukeEnergyAuth(session, auth0)
+
+            # Restore with invalid id_token - should not raise
+            token_data = {
+                "access_token": "restored_access",
+                "refresh_token": "restored_refresh",
+                "id_token": "invalid.jwt.token",
+            }
+
+            # Should not raise, just log debug message
+            auth.restore_token(token_data)
+            assert auth.token is not None
+
+    @pytest.mark.asyncio
+    async def test_duke_token_expired_without_expiry_info(self):
+        """Test DE token is considered expired when no expiry info."""
+        from aiodukeenergy import Auth0Client, DukeEnergyAuth
+
+        async with aiohttp.ClientSession() as session:
+            auth0 = Auth0Client(session)
+            auth = DukeEnergyAuth(session, auth0)
+
+            # Set only the DE access token without issued_at/expires_in
+            auth._de_access_token = "some_token"  # noqa: S105
+            auth._de_token_issued_at = None
+            auth._de_token_expires_in = None
+
+            # Token should be considered expired
+            assert auth._is_de_token_expired() is True
+
+    @pytest.mark.asyncio
+    async def test_duke_token_with_server_issued_at(self, mock_auth0_token_response):
+        """Test Duke token exchange uses server's issued_at timestamp."""
+        from aiodukeenergy import Auth0Client, DukeEnergyAuth
+
+        async with aiohttp.ClientSession() as session:
+            auth0 = Auth0Client(session)
+            auth = DukeEnergyAuth(session, auth0)
+
+            server_issued_at = 1700000000  # Fixed timestamp
+
+            with aioresponses() as mocked:
+                # Mock Auth0 token endpoint
+                mocked.post(
+                    "https://login.duke-energy.com/oauth/token",
+                    payload=mock_auth0_token_response,
+                )
+                # Mock Duke Energy API token exchange with server-provided issued_at
+                mocked.post(
+                    "https://api-v2.cma.duke-energy.app/login/auth-token",
+                    payload={
+                        "access_token": "de_token",
+                        "expires_in": 1800,
+                        "issued_at": server_issued_at,
+                    },
+                )
+
+                await auth.authenticate_with_code("test_code", "verifier")
+
+                # Verify server timestamp was used
+                assert auth._de_token_issued_at is not None
+                assert auth._de_token_issued_at.timestamp() == server_issued_at
 
 
 class TestImports:
