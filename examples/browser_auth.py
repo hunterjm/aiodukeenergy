@@ -8,8 +8,8 @@ This script handles the OAuth flow for Duke Energy's mobile API:
 3. Script exchanges the authorization code for Duke Energy API tokens
 
 Prerequisites:
-    - Install the Chrome extension from examples/chrome-extension/
-    - See examples/chrome-extension/README.md for installation instructions
+    - Install the Chrome extension from ./chrome-extension/
+    - See ./chrome-extension/README.md for installation instructions
 
 Usage:
     python browser_auth.py
@@ -32,7 +32,7 @@ async def main() -> None:
     print("=" * 60)
     print()
     print("Prerequisites:")
-    print("  1. Install the Chrome extension from examples/chrome-extension/")
+    print("  1. Install the Chrome extension from ./chrome-extension/")
     print("  2. Load it as an unpacked extension in chrome://extensions/")
     print()
 

@@ -156,7 +156,7 @@ class Auth0Client:
         that can be opened in a browser. After the user logs in, they will be
         redirected to a cma-prod:// URL containing an authorization code.
 
-        Use the Chrome extension from examples/chrome-extension/ to capture
+        Use the Chrome extension from ./chrome-extension/ to capture
         the authorization code from the redirect.
 
         :returns: Tuple of (authorize_url, state, code_verifier).
