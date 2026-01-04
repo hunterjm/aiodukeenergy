@@ -126,14 +126,10 @@ class AbstractDukeEnergyAuth(ABC):
         :returns: A valid Duke Energy API access token.
         :raises DukeEnergyAuthError: If token exchange fails.
         """
-        # Get fresh id_token (this triggers refresh if needed)
-        id_token = await self.async_get_id_token()
-
-        # Update cached user info from id_token
-        self._update_user_info_from_token(id_token)
-
-        # Exchange for Duke Energy token if we don't have one or it's expired
+        # Only get id_token and exchange if DE token is expired
         if self._is_de_token_expired():
+            id_token = await self.async_get_id_token()
+            self._update_user_info_from_token(id_token)
             await self._exchange_for_duke_token(id_token)
 
         return self._de_access_token  # type: ignore[return-value]
