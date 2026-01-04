@@ -97,7 +97,7 @@ def is_token_expired(token: str) -> bool:
         if exp is None:
             return True
         return datetime.fromtimestamp(exp, tz=timezone.utc) < datetime.now(timezone.utc)
-    except jwt.DecodeError:
+    except (jwt.DecodeError, jwt.ExpiredSignatureError):
         return True
 
 

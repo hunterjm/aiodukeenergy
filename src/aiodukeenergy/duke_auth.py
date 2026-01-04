@@ -20,6 +20,7 @@ from __future__ import annotations
 import base64
 import logging
 from abc import ABC, abstractmethod
+from datetime import datetime, timezone
 from typing import TYPE_CHECKING, Any
 
 import aiohttp
@@ -77,6 +78,8 @@ class AbstractDukeEnergyAuth(ABC):
         self._session = session
         self._timeout = timeout
         self._de_access_token: str | None = None
+        self._de_token_issued_at: datetime | None = None
+        self._de_token_expires_in: int | None = None
         self._email: str | None = None
         self._internal_user_id: str | None = None
 
@@ -129,11 +132,28 @@ class AbstractDukeEnergyAuth(ABC):
         # Update cached user info from id_token
         self._update_user_info_from_token(id_token)
 
-        # Exchange for Duke Energy token if we don't have one
-        if not self._de_access_token:
+        # Exchange for Duke Energy token if we don't have one or it's expired
+        if self._is_de_token_expired():
             await self._exchange_for_duke_token(id_token)
 
         return self._de_access_token  # type: ignore[return-value]
+
+    def _is_de_token_expired(self) -> bool:
+        """
+        Check if the Duke Energy API token is expired or missing.
+
+        Uses a 60-second buffer before expiry to avoid edge cases.
+
+        :returns: True if the token is expired or missing, False otherwise.
+        """
+        if not self._de_access_token:
+            return True
+        if not self._de_token_issued_at or not self._de_token_expires_in:
+            return True
+
+        # Check if token is expired (with 60 second buffer)
+        expiry_time = self._de_token_issued_at.timestamp() + self._de_token_expires_in
+        return datetime.now(timezone.utc).timestamp() >= (expiry_time - 60)
 
     def _update_user_info_from_token(self, id_token: str) -> None:
         """
@@ -194,6 +214,15 @@ class AbstractDukeEnergyAuth(ABC):
 
             data = await response.json()
             self._de_access_token = data.get("access_token")
+            # Use server's issued_at timestamp, fallback to current time
+            issued_at = data.get("issued_at")
+            if issued_at:
+                self._de_token_issued_at = datetime.fromtimestamp(
+                    issued_at, tz=timezone.utc
+                )
+            else:
+                self._de_token_issued_at = datetime.now(timezone.utc)
+            self._de_token_expires_in = data.get("expires_in", 1800)  # Default 30 min
             _LOGGER.debug("Duke Energy token exchange successful")
 
             # Update user info from response
@@ -250,6 +279,8 @@ class AbstractDukeEnergyAuth(ABC):
         response) to force a re-exchange on the next request.
         """
         self._de_access_token = None
+        self._de_token_issued_at = None
+        self._de_token_expires_in = None
 
 
 class DukeEnergyAuth(AbstractDukeEnergyAuth):
