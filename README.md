@@ -54,11 +54,13 @@ capture the mobile app's custom redirect URL.
 
 ### Setup
 
-1. Install the Chrome extension from `./chrome-extension/`:
+1. Install the Chrome extension:
 
+   - Download the [latest chrome-extension.zip](https://github.com/hunterjm/aiodukeenergy/releases/latest/download/chrome-extension.zip) from releases (or use `./chrome-extension/` from source)
+   - Extract the zip file
    - Open Chrome and navigate to `chrome://extensions/`
    - Enable "Developer mode"
-   - Click "Load unpacked" and select the `./chrome-extension/` folder
+   - Click "Load unpacked" and select the extracted folder
 
 2. Run the browser authentication script:
 
