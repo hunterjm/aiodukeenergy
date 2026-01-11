@@ -1,20 +1,37 @@
+"""
+Duke Energy API client.
+
+This module provides a client for interacting with the Duke Energy API.
+The client requires an AbstractDukeEnergyAuth instance for authentication.
+
+Example usage:
+    async with aiohttp.ClientSession() as session:
+        auth0_client = Auth0Client(session)
+        auth = DukeEnergyAuth(session, auth0_client)
+
+        # Initial authentication
+        auth_url, state, code_verifier = auth0_client.get_authorization_url()
+        # ... user logs in and gets code ...
+        await auth.authenticate_with_code(code, code_verifier)
+
+        # Create API client
+        client = DukeEnergy(auth)
+        accounts = await client.get_accounts()
+        meters = await client.get_meters()
+"""
+
 from __future__ import annotations
 
-import base64
 import logging
-from datetime import datetime, timedelta, timezone
-from typing import Any, Literal
+from datetime import datetime, timedelta
+from typing import TYPE_CHECKING, Any, Literal
 
-import aiohttp
 import yarl
 
-_BASE_URL = yarl.URL("https://api-v2.cma.duke-energy.app")
+if TYPE_CHECKING:
+    from .duke_auth import AbstractDukeEnergyAuth
 
-# Client ID and Secret are from the iOS app
-_TOKEN_URL = _BASE_URL.joinpath("login-services", "auth-token")
-_CLIENT_ID = "ShOncX64eXKHMt4IVaaLz9bPxhmCp2y27rvxK3ZLXFnPA2BF"
-_CLIENT_SECRET = "J3eHfLDJVDZL8TSNjBbcgOkBmLQPfGDXqffLEgBKj8orXkwEueK6xxEA7fDM0fQ6"  # noqa: S105
-_TOKEN_AUTH = base64.b64encode(f"{_CLIENT_ID}:{_CLIENT_SECRET}".encode()).decode()
+_BASE_URL = yarl.URL("https://api-v2.cma.duke-energy.app")
 
 _DATE_FORMAT = "%m/%d/%Y"
 
@@ -22,70 +39,61 @@ _LOGGER = logging.getLogger(__name__)
 
 
 class DukeEnergy:
-    """Duke Energy API client."""
+    """
+    Duke Energy API client.
 
-    def __init__(
-        self,
-        username: str,
-        password: str,
-        session: aiohttp.ClientSession | None = None,
-        timeout: int = 10,
-    ) -> None:
-        """Initialize the Duke Energy API client."""
-        self.username = username
-        self.password = password
-        self.session = session or aiohttp.ClientSession()
-        self._created_session = not session
-        self.timeout = timeout
-        self._auth: dict[str, Any] | None = None
+    This client provides access to the Duke Energy API for retrieving
+    account information, meter data, and energy usage.
+
+    The client requires an AbstractDukeEnergyAuth instance for authentication.
+    Use DukeEnergyAuth for the standard OAuth flow, or implement a custom
+    subclass of AbstractDukeEnergyAuth for integrations like Home Assistant.
+
+    Example usage:
+        # Create auth provider
+        auth0_client = Auth0Client(session)
+        auth = DukeEnergyAuth(session, auth0_client)
+
+        # Authenticate
+        auth_url, state, code_verifier = auth0_client.get_authorization_url()
+        # ... user logs in ...
+        await auth.authenticate_with_code(code, code_verifier)
+
+        # Create API client and access data
+        client = DukeEnergy(auth)
+        accounts = await client.get_accounts()
+        meters = await client.get_meters()
+    """
+
+    def __init__(self, auth: AbstractDukeEnergyAuth) -> None:
+        """
+        Initialize the Duke Energy API client.
+
+        :param auth: Authentication provider implementing AbstractDukeEnergyAuth.
+        """
+        self._auth = auth
         self._accounts: dict[str, Any] | None = None
         self._meters: dict[str, Any] | None = None
 
     @property
-    def internal_user_id(self) -> str | None:
-        """Get the internal user ID from auth response."""
-        return self._auth.get("internalUserID") if self._auth else None
+    def email(self) -> str | None:
+        """Get the email from the auth provider."""
+        return self._auth.email
 
     @property
-    def email(self) -> str | None:
-        """Get the email from auth response."""
-        return self._auth.get("loginEmailAddress") if self._auth else None
-
-    async def close(self) -> None:
-        """Close the SolarEdge API client."""
-        if self._created_session:
-            await self.session.close()
-
-    async def authenticate(self) -> dict[str, Any]:
-        """Authenticate with Duke Energy."""
-        _LOGGER.debug("Fetching Auth Token")
-        response = await self.session.post(
-            _TOKEN_URL,
-            headers={"Authorization": f"Basic {_TOKEN_AUTH}"},
-            data={
-                "grant_type": "password",
-                "username": self.username,
-                "password": self.password,
-            },
-            timeout=self.timeout,
-        )
-        _LOGGER.debug("Response from %s: %s", _TOKEN_URL, response.status)
-        response.raise_for_status()
-        result = await response.json()
-        self._auth = result
-        return result
+    def internal_user_id(self) -> str | None:
+        """Get the internal user ID from the auth provider."""
+        return self._auth.internal_user_id
 
     async def get_accounts(self, fresh: bool = False) -> dict[str, dict[str, Any]]:
         """
         Get account details from Duke Energy.
 
         :param fresh: Whether to fetch fresh data.
+        :returns: Dictionary of account number to account details.
         """
         if self._accounts and not fresh:
             return self._accounts
-
-        if not self.email or not self.internal_user_id:
-            await self._validate_auth()
 
         account_list = await self._get_json(
             _BASE_URL.joinpath("account-list"),
@@ -121,6 +129,7 @@ class DukeEnergy:
         Get meter details from Duke Energy.
 
         :param fresh: Whether to fetch fresh data.
+        :returns: Dictionary of meter serial number to meter details.
         """
         if self._meters and not fresh:
             return self._meters
@@ -131,7 +140,6 @@ class DukeEnergy:
         meters = {}
         for account in self._accounts.values() if self._accounts else []:
             for meter in account["details"]["meterInfo"]:
-                # set meter info and add account without details
                 meters[meter["serialNum"]] = {
                     **meter,
                     "account": {k: v for k, v in account.items() if k != "details"},
@@ -153,11 +161,12 @@ class DukeEnergy:
         Get energy usage from Duke Energy.
 
         :param serial_number: The serial number of the meter.
-        :param interval: The interval.
-        :param period: The period.
+        :param interval: The interval (HOURLY or DAILY).
+        :param period: The period (DAY, WEEK, or BILLINGCYCLE).
         :param start_date: The start date.
         :param end_date: The end date.
-        :param include_temperature: Whether to include temperature.
+        :param include_temperature: Whether to include temperature data.
+        :returns: Dictionary with 'data' and 'missing' keys.
         """
         if not self._meters:
             await self.get_meters()
@@ -195,24 +204,20 @@ class DukeEnergy:
             },
         )
 
-        # result is an object with a single key "usageArray" which is an array of
-        # objects with keys "usage", "date", and "temperatureAvg"
-        # map results to an object from start to end date by interval
         usage_array = result["usageArray"]
         usage_len = len(usage_array)
         num_expected_values = (end_date - start_date).days + 1
 
-        # Extract temperature data into a separate list from the usage array
+        # Extract temperature data
         temp = [usage_array[i]["temperatureAvg"] for i in range(num_expected_values)]
         temp_len = len(temp)
 
-        # if interval is hourly, multiply the number of values by 24
+        # If interval is hourly, multiply the number of values by 24
         if interval == "HOURLY":
             num_expected_values = num_expected_values * 24
             temp = [t for t in temp for _ in range(24)]
             temp_len = len(temp)
 
-        # Take the max of the actual number of values and the expected number of values
         num_values = max(usage_len, num_expected_values)
 
         data = {}
@@ -259,36 +264,18 @@ class DukeEnergy:
     async def _get_json(
         self, url: yarl.URL, params: dict[str, Any] | None = None
     ) -> dict[str, Any]:
-        """Get JSON from the Duke Energy API."""
-        await self._validate_auth()
-        if not self._auth:
-            raise ValueError("Authentication failed")
+        """
+        Get JSON from the Duke Energy API.
 
+        :param url: URL to request.
+        :param params: Query parameters.
+        :returns: JSON response as dictionary.
+        """
         _LOGGER.debug("Calling %s with params: %s", url, params)
-        response = await self.session.get(
-            url,
-            headers={"Authorization": f"Bearer {self._auth['access_token']}"},
-            params=params or {},
-            timeout=self.timeout,
-        )
+
+        response = await self._auth.request("GET", url, params=params or {})
         _LOGGER.debug("Response from %s: %s", url, response.status)
         response.raise_for_status()
-        json = await response.json()
-        _LOGGER.debug("JSON from %s: %s", url, json)
-        return json
-
-    async def _validate_auth(self) -> None:
-        """Validate the authentication tokens and fetch new ones if necessary."""
-        if self._auth:
-            issued_at = datetime.fromtimestamp(
-                int(self._auth["issued_at"]), timezone.utc
-            )
-            expires_in = int(self._auth["expires_in"])
-            reauth = issued_at + timedelta(seconds=expires_in) < datetime.now(
-                timezone.utc
-            )
-
-        if self._auth and not reauth:
-            return
-
-        await self.authenticate()
+        json_data = await response.json()
+        _LOGGER.debug("JSON from %s: %s", url, json_data)
+        return json_data

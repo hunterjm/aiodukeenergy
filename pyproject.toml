@@ -23,9 +23,10 @@ packages = [
 "Changelog" = "https://github.com/hunterjm/aiodukeenergy/blob/main/CHANGELOG.md"
 
 [tool.poetry.dependencies]
-python = "^3.8"
+python = "^3.10"
 aiohttp = ">=3.9.0"
 yarl = ">=1.9.0"
+PyJWT = ">=2.0.0"
 
 [tool.poetry.group.dev.dependencies]
 pytest = "^8.0.0"
