@@ -1,5 +1,11 @@
 # Changelog
 
+## v1.0.0 (2026-01-11)
+
+### Breaking
+
+- Implement auth change to auth0 (#13) ([`eba6c40`](https://github.com/hunterjm/aiodukeenergy/commit/eba6c40a289777d0f13da376c243674b99df2da1))
+
 ## v0.3.0 (2025-03-28)
 
 ### Feature
