@@ -236,7 +236,7 @@ class DukeEnergy:
             expected_series = (
                 date.strftime("%I %p")
                 if interval == "HOURLY"
-                else date.strftime("%m/%d/%Y")
+                else date.strftime("%-m/%d/%Y")
             )
 
             # Skip duplicate dates
