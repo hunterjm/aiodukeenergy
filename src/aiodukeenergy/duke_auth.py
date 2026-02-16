@@ -268,12 +268,11 @@ class AbstractDukeEnergyAuth(ABC):
         headers = kwargs.pop("headers", {})
         headers.update(
             {
-                "Authorization": f"Bearer {access_token}",
-                "platform": "Android",
-                "version": "7.2.1",
-                "operatingsystem": "15",
-                "sdk_int": "35",
-                "User-Agent": "okhttp/4.12.0",
+                "Authorization": f"Basic {auth_header}",
+                "Content-Type": "application/json",
+                "Accept": "application/json",
+                "platform": "iOS",
+                "User-Agent": "Duke%20Energy/1241 CFNetwork/3860.300.31 Darwin/25.2.0",
             }
         )
 
