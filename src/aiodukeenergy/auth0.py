@@ -39,11 +39,12 @@ _TOKEN_URL = _AUTH0_BASE_URL / "oauth" / "token"
 _USERINFO_URL = _AUTH0_BASE_URL / "userinfo"
 
 # Mobile app client configuration (required for Duke Energy API token exchange)
-_CLIENT_ID = "uB67shrSSodJrNKTvZ0cWyAE9VRqkFwI"
-_REDIRECT_URI = "cma-prod://login.duke-energy.com/android/com.dukeenergy.customerapp.release/callback"
+_CLIENT_ID = "PitoKqxMh8thrFF8rRlYGrAs3LbSD2dj"
+# _REDIRECT_URI = "cma-prod://login.duke-energy.com/ios/com.dukeenergy.customerapp.release/callback"
+_REDIRECT_URI = "https://login.duke-energy.com/ios/com.duke-energy.app/callback"
 _AUTH0_CLIENT = base64.b64encode(
     json.dumps(
-        {"name": "Auth0.Android", "env": {"android": "35"}, "version": "3.8.0"}
+        {"env": {"iOS": "26.2", "swift": "6.x"}, "version": "2.13.0", "name": "Auth0.swift"}
     ).encode()
 ).decode()
 
@@ -214,7 +215,7 @@ class Auth0Client:
             "accept-language": "en_US",
             "auth0-client": _AUTH0_CLIENT,
             "Content-Type": "application/json; charset=utf-8",
-            "User-Agent": "okhttp/4.12.0",
+            "User-Agent": "Duke%20Energy/1241 CFNetwork/3860.300.31 Darwin/25.2.0",
         }
 
         response = await self.session.post(
@@ -255,7 +256,7 @@ class Auth0Client:
             "accept-language": "en_US",
             "auth0-client": _AUTH0_CLIENT,
             "Content-Type": "application/json; charset=utf-8",
-            "User-Agent": "okhttp/4.12.0",
+            "User-Agent": "Duke%20Energy/1241 CFNetwork/3860.300.31 Darwin/25.2.0",
         }
 
         response = await self.session.post(

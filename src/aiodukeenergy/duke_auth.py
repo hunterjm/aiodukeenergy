@@ -39,8 +39,10 @@ _BASE_URL = yarl.URL("https://api-v2.cma.duke-energy.app")
 _AUTH_TOKEN_URL = _BASE_URL / "login" / "auth-token"
 
 # Duke Energy API credentials (from mobile app)
-_DE_CLIENT_ID = "M3NFEWMbwDjQz0zlxI671TaVLyJZYgkgWmiG0qz68wIT78gM"
-_DE_CLIENT_SECRET = "X8cvUgTvJA87UStLu1ONuCXzGqod6mJ0kAxwLJe3NGDMXmapO5YEGgCcJH1X0wFO"  # noqa: S105
+# _DE_CLIENT_ID = "HO2JKfv2dVuXhLLhleDr1s6fgVlPduGxVBO6GaS3dDjE7Kp8"
+_DE_CLIENT_ID = "HO2JKfv2dVuXhLHhleDr1s6fgVlPduGxVBO6GaS3dDjE7Kp8"
+# _DE_CLIENT_SECRET = "g4236o8ROFMD4JuVI4tsgLY7NiIEGXQgzzzCnH9RiRrvFC6IN4KFg3A6dBmGIIuW6"
+_DE_CLIENT_SECRET = "g4236o8ROFMD4JuVI4tsgLY7NiIEGXQgzzCnH9RiRrvFC6IN4KFg3A6dBmGIIuW6"  # noqa: S105
 
 
 class AbstractDukeEnergyAuth(ABC):
@@ -181,15 +183,32 @@ class AbstractDukeEnergyAuth(ABC):
 
         headers = {
             "Authorization": f"Basic {auth_header}",
-            "Content-Type": "application/json; charset=utf-8",
-            "platform": "Android",
-            "version": "7.1.0",
-            "operatingsystem": "15",
-            "sdk_int": "35",
-            "User-Agent": "okhttp/4.12.0",
+            "Content-Type": "application/json",
+            "Accept": "application/json",
+            "platform": "iOS",
+            "User-Agent": "Duke%20Energy/1241 CFNetwork/3860.300.31 Darwin/25.2.0",
         }
 
+        # # Debug: log all id_token claims for troubleshooting
+        # try:
+        #     payload = decode_token(id_token)
+        #     _LOGGER.debug("id_token claims: %s", list(payload.keys()))
+        #     _LOGGER.debug(
+        #         "id_token key claims - aud: %s, de_auth: %s, customer_type: %s, "
+        #         "experiences: %s, flow_type: %s, redirect_uri: %s",
+        #         payload.get("aud"),
+        #         payload.get("de_auth", "MISSING"),
+        #         payload.get("customer_type", "MISSING"),
+        #         payload.get("experiences", "MISSING"),
+        #         payload.get("flow_type", "MISSING"),
+        #         payload.get("redirect_uri", "MISSING"),
+        #     )
+        # except Exception as err:
+        #     _LOGGER.debug("Failed to decode id_token for debug: %s", err)
+
         _LOGGER.debug("Exchanging id_token for Duke Energy API token")
+        # _LOGGER.debug("Exchange request headers: %s", {k: v[:50] + '...' if len(v) > 50 else v for k, v in headers.items()})
+        # _LOGGER.debug("Exchange request body key 'idToken' length: %s", len(id_token))
 
         async with self._session.post(
             str(_AUTH_TOKEN_URL),
@@ -197,6 +216,7 @@ class AbstractDukeEnergyAuth(ABC):
             json={"idToken": id_token},
             timeout=self._timeout,
         ) as response:
+            # _LOGGER.debug("Exchange response headers: %s", dict(response.headers))
             if response.status != 200:
                 text = await response.text()
                 _LOGGER.error(
@@ -250,7 +270,7 @@ class AbstractDukeEnergyAuth(ABC):
             {
                 "Authorization": f"Bearer {access_token}",
                 "platform": "Android",
-                "version": "7.1.0",
+                "version": "7.2.1",
                 "operatingsystem": "15",
                 "sdk_int": "35",
                 "User-Agent": "okhttp/4.12.0",

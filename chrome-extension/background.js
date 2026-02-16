@@ -29,7 +29,7 @@ chrome.webNavigation.onBeforeNavigate.addListener(async (details) => {
   const url = details.url;
 
   // Check if this is the cma-prod:// redirect
-  if (url.startsWith("cma-prod://")) {
+  if (url.startsWith("https://login.duke-energy.com/ios/")) {
     // Parse the URL to extract the authorization code
     const urlObj = new URL(url);
     const code = urlObj.searchParams.get("code");
