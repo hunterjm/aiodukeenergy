@@ -71,7 +71,7 @@ chrome.webNavigation.onBeforeNavigate.addListener(async (details) => {
 // Also listen for errors when Chrome can't handle cma-prod://
 chrome.webNavigation.onErrorOccurred.addListener(async (details) => {
   // Check if the error was for a cma-prod:// URL
-  if (details.url && details.url.startsWith("cma-prod://")) {
+  if (details.url && details.url.startsWith("https://login.duke-energy.com/ios/")) {
     const urlObj = new URL(details.url);
     const code = urlObj.searchParams.get("code");
     const state = urlObj.searchParams.get("state");
