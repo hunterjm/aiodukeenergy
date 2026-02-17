@@ -39,9 +39,7 @@ _BASE_URL = yarl.URL("https://api-v2.cma.duke-energy.app")
 _AUTH_TOKEN_URL = _BASE_URL / "login" / "auth-token"
 
 # Duke Energy API credentials (from mobile app)
-# _DE_CLIENT_ID = "HO2JKfv2dVuXhLLhleDr1s6fgVlPduGxVBO6GaS3dDjE7Kp8"
 _DE_CLIENT_ID = "HO2JKfv2dVuXhLHhleDr1s6fgVlPduGxVBO6GaS3dDjE7Kp8"
-# _DE_CLIENT_SECRET = "g4236o8ROFMD4JuVI4tsgLY7NiIEGXQgzzzCnH9RiRrvFC6IN4KFg3A6dBmGIIuW6"
 _DE_CLIENT_SECRET = "g4236o8ROFMD4JuVI4tsgLY7NiIEGXQgzzCnH9RiRrvFC6IN4KFg3A6dBmGIIuW6"  # noqa: S105
 
 
@@ -184,7 +182,6 @@ class AbstractDukeEnergyAuth(ABC):
         headers = {
             "Authorization": f"Basic {auth_header}",
             "Content-Type": "application/json",
-            "Accept": "application/json",
             "platform": "iOS",
             "User-Agent": "Duke%20Energy/1241 CFNetwork/3860.300.31 Darwin/25.2.0",
         }
@@ -269,11 +266,9 @@ class AbstractDukeEnergyAuth(ABC):
         headers.update(
             {
                 "Authorization": f"Bearer {access_token}",
-                "platform": "Android",
-                "version": "7.2.1",
-                "operatingsystem": "15",
-                "sdk_int": "35",
-                "User-Agent": "okhttp/4.12.0",
+                "Content-Type": "application/json",
+                "platform": "iOS",
+                "User-Agent": "Duke%20Energy/1241 CFNetwork/3860.300.31 Darwin/25.2.0",
             }
         )
 
