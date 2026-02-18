@@ -1,8 +1,15 @@
 /**
  * Duke Energy OAuth Helper - Background Service Worker
  *
- * This extension intercepts the cma-prod:// redirect from Duke Energy's
- * Auth0 mobile OAuth flow and extracts the authorization code.
+ * This extension intercepts OAuth redirects from Duke Energy's Auth0 mobile
+ * flow and extracts the authorization code. Two redirect patterns are handled:
+ *
+ *   - https://login.duke-energy.com/ios/... (iOS HTTPS redirect)
+ *   - cma-prod://...                        (Android/legacy custom-scheme redirect)
+ *
+ * Both are caught in onBeforeNavigate.
+ * onErrorOccurred catches cma-prod:// in case Chrome fires the error before the navigation is
+ * intercepted.
  *
  * If the state parameter is a JWT containing a flow_id, it automatically
  * redirects to Home Assistant's OAuth endpoint.
@@ -24,78 +31,67 @@ function isHomeAssistantFlow(state) {
   }
 }
 
-// Listen for navigation events that would redirect to cma-prod://
-chrome.webNavigation.onBeforeNavigate.addListener(async (details) => {
-  const url = details.url;
+// Shared handler for both iOS and Android OAuth redirects.
+function handleOAuthRedirect(tabId, url) {
+  const urlObj = new URL(url);
+  const code = urlObj.searchParams.get("code");
+  const state = urlObj.searchParams.get("state");
 
-  // Check if this is the cma-prod:// redirect
-  if (url.startsWith("https://login.duke-energy.com/ios/")) {
-    // Parse the URL to extract the authorization code
-    const urlObj = new URL(url);
-    const code = urlObj.searchParams.get("code");
-    const state = urlObj.searchParams.get("state");
+  if (code && isHomeAssistantFlow(state)) {
+    // Redirect to Home Assistant OAuth endpoint
+    const haUrl = new URL("https://my.home-assistant.io/redirect/oauth");
+    haUrl.searchParams.set("code", code);
+    haUrl.searchParams.set("state", state);
+    chrome.tabs.update(tabId, { url: haUrl.toString() });
+    return;
+  }
 
-    // Check if this is a Home Assistant flow
-    if (code && isHomeAssistantFlow(state)) {
-      // Redirect to Home Assistant OAuth endpoint
-      const haUrl = new URL("https://my.home-assistant.io/redirect/oauth");
-      haUrl.searchParams.set("code", code);
-      haUrl.searchParams.set("state", state);
+  // Otherwise, show capture page
+  const captureUrl = new URL(chrome.runtime.getURL("capture.html"));
+  captureUrl.searchParams.set("code", code || "");
+  captureUrl.searchParams.set("state", state || "");
+  captureUrl.searchParams.set("error", urlObj.searchParams.get("error") || "");
+  captureUrl.searchParams.set(
+    "error_description",
+    urlObj.searchParams.get("error_description") || "",
+  );
 
-      chrome.tabs.update(details.tabId, { url: haUrl.toString() });
-      return;
-    }
+  if (code) {
+    chrome.action.setBadgeText({ text: "✓" });
+    chrome.action.setBadgeBackgroundColor({ color: "#4CAF50" });
+  }
 
-    // Otherwise, show capture page
-    const captureUrl = new URL(chrome.runtime.getURL("capture.html"));
-    captureUrl.searchParams.set("code", code || "");
-    captureUrl.searchParams.set("state", state || "");
-    captureUrl.searchParams.set(
-      "error",
-      urlObj.searchParams.get("error") || "",
-    );
-    captureUrl.searchParams.set(
-      "error_description",
-      urlObj.searchParams.get("error_description") || "",
-    );
+  chrome.tabs.update(tabId, { url: captureUrl.toString() });
+}
 
-    if (code) {
-      chrome.action.setBadgeText({ text: "✓" });
-      chrome.action.setBadgeBackgroundColor({ color: "#4CAF50" });
-    }
-
-    chrome.tabs.update(details.tabId, { url: captureUrl.toString() });
+// Catch Auth0 pushState URL changes (no real navigation fires onBeforeNavigate).
+// This handles the case where Auth0's Universal Login uses history.pushState
+// to update the address bar to the callback URL after credential validation,
+// rather than issuing a real HTTP redirect.
+chrome.tabs.onUpdated.addListener((tabId, changeInfo) => {
+  const url = changeInfo.url;
+  if (url && url.startsWith("https://login.duke-energy.com/ios/")) {
+    handleOAuthRedirect(tabId, url);
   }
 });
 
-// Also listen for errors when Chrome can't handle cma-prod://
-chrome.webNavigation.onErrorOccurred.addListener(async (details) => {
-  // Check if the error was for a cma-prod:// URL
-  if (details.url && details.url.startsWith("https://login.duke-energy.com/ios/")) {
-    const urlObj = new URL(details.url);
-    const code = urlObj.searchParams.get("code");
-    const state = urlObj.searchParams.get("state");
+// Intercept iOS HTTPS redirects and Android custom-scheme redirects before
+// the browser attempts to load them (covers real page loads and refreshes).
+chrome.webNavigation.onBeforeNavigate.addListener((details) => {
+  const url = details.url;
 
-    // Check if this is a Home Assistant flow
-    if (code && isHomeAssistantFlow(state)) {
-      // Redirect to Home Assistant OAuth endpoint
-      const haUrl = new URL("https://my.home-assistant.io/redirect/oauth");
-      haUrl.searchParams.set("code", code);
-      haUrl.searchParams.set("state", state);
+  if (
+    url.startsWith("https://login.duke-energy.com/ios/") ||
+    url.startsWith("cma-prod://")
+  ) {
+    handleOAuthRedirect(details.tabId, url);
+  }
+});
 
-      chrome.tabs.update(details.tabId, { url: haUrl.toString() });
-      return;
-    }
-
-    // Otherwise, show capture page
-    const captureUrl = new URL(chrome.runtime.getURL("capture.html"));
-    captureUrl.searchParams.set("code", code || "");
-
-    if (code) {
-      chrome.action.setBadgeText({ text: "✓" });
-      chrome.action.setBadgeBackgroundColor({ color: "#4CAF50" });
-    }
-
-    chrome.tabs.update(details.tabId, { url: captureUrl.toString() });
+// Fallback: catch cma-prod:// if Chrome fires onErrorOccurred before
+// onBeforeNavigate can redirect the tab.
+chrome.webNavigation.onErrorOccurred.addListener((details) => {
+  if (details.url && details.url.startsWith("cma-prod://")) {
+    handleOAuthRedirect(details.tabId, details.url);
   }
 });
