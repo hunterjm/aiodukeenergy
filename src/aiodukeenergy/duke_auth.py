@@ -186,26 +186,7 @@ class AbstractDukeEnergyAuth(ABC):
             "User-Agent": "Duke%20Energy/1241 CFNetwork/3860.300.31 Darwin/25.2.0",
         }
 
-        # # Debug: log all id_token claims for troubleshooting
-        # try:
-        #     payload = decode_token(id_token)
-        #     _LOGGER.debug("id_token claims: %s", list(payload.keys()))
-        #     _LOGGER.debug(
-        #         "id_token key claims - aud: %s, de_auth: %s, customer_type: %s, "
-        #         "experiences: %s, flow_type: %s, redirect_uri: %s",
-        #         payload.get("aud"),
-        #         payload.get("de_auth", "MISSING"),
-        #         payload.get("customer_type", "MISSING"),
-        #         payload.get("experiences", "MISSING"),
-        #         payload.get("flow_type", "MISSING"),
-        #         payload.get("redirect_uri", "MISSING"),
-        #     )
-        # except Exception as err:
-        #     _LOGGER.debug("Failed to decode id_token for debug: %s", err)
-
         _LOGGER.debug("Exchanging id_token for Duke Energy API token")
-        # _LOGGER.debug("Exchange request headers: %s", {k: v[:50] + '...' if len(v) > 50 else v for k, v in headers.items()})
-        # _LOGGER.debug("Exchange request body key 'idToken' length: %s", len(id_token))
 
         async with self._session.post(
             str(_AUTH_TOKEN_URL),
@@ -213,7 +194,6 @@ class AbstractDukeEnergyAuth(ABC):
             json={"idToken": id_token},
             timeout=self._timeout,
         ) as response:
-            # _LOGGER.debug("Exchange response headers: %s", dict(response.headers))
             if response.status != 200:
                 text = await response.text()
                 _LOGGER.error(
@@ -266,9 +246,10 @@ class AbstractDukeEnergyAuth(ABC):
         headers.update(
             {
                 "Authorization": f"Bearer {access_token}",
-                "Content-Type": "application/json",
+                "Content-Type": "application/json; charset=utf-8",
+                "Accept": "application/json",
                 "platform": "iOS",
-                "User-Agent": "Duke%20Energy/1241 CFNetwork/3860.300.31 Darwin/25.2.0",
+                "User-Agent": "Duke%20Energy/1250 CFNetwork/3860.300.31 Darwin/25.2.0",
             }
         )
 
