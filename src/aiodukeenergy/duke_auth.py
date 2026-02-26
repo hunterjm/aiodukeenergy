@@ -181,7 +181,8 @@ class AbstractDukeEnergyAuth(ABC):
 
         headers = {
             "Authorization": f"Basic {auth_header}",
-            "Content-Type": "application/json",
+            "Content-Type": "application/json; charset=utf-8",
+            "Accept": "application/json",
             "platform": "iOS",
             "User-Agent": "Duke%20Energy/1241 CFNetwork/3860.300.31 Darwin/25.2.0",
         }
