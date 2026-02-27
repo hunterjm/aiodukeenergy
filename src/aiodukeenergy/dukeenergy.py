@@ -186,7 +186,9 @@ class DukeEnergy:
                 "serviceType": meter["serviceType"],
                 "intervalFrequency": interval,
                 "periodType": period,
-                "date": ( #Duke Energy API expects the year, month and day (if hourly) to match the startDate, but with the current time. Odd, but matching POST reqeusts.
+                # Duke Energy API expects year+month+day (hourly) or year+month (daily)
+                # from startDate, combined with the current time of day.
+                "date": (
                     datetime.now(start_date.tzinfo).replace(
                         year=start_date.year,
                         month=start_date.month,

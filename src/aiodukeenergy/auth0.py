@@ -7,7 +7,8 @@ since automated login is blocked by CAPTCHA.
 
 Flow:
 1. Call get_authorization_url() to get a URL for the user to open in a browser
-2. User logs in via browser and gets redirected to https://login.duke-energy.com/ios/ URL with code
+2. User logs in via browser and gets redirected to
+   https://login.duke-energy.com/ios/ URL with code
 3. Use a Chrome extension to capture the code from the redirect
 4. Call exchange_code() with the authorization code to get tokens
 """
@@ -159,7 +160,8 @@ class Auth0Client:
 
         This method generates PKCE credentials and builds an authorization URL
         that can be opened in a browser. After the user logs in, they will be
-        redirected to a https://login.duke-energy.com/ios/ URL containing an authorization code.
+        redirected to a https://login.duke-energy.com/ios/
+        URL containing an authorization code.
 
         Use the Chrome extension from ./chrome-extension/ to capture
         the authorization code from the redirect.
