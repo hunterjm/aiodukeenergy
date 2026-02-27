@@ -849,6 +849,120 @@ class TestErrorHandling:
                 with pytest.raises(DukeEnergyTokenExpiredError, match="Token refresh"):
                     await auth.async_get_id_token()
 
+    @pytest.mark.asyncio
+    async def test_get_energy_usage_invalid_serial_number(
+        self,
+        mock_duke_token_response,
+        mock_account_list_response,
+        mock_account_details_response,
+    ):
+        """Test that get_energy_usage raises ValueError for unknown serial number."""
+        test_token = _create_test_jwt(exp_offset_seconds=3600)
+        test_id_token = _create_test_jwt(exp_offset_seconds=3600)
+
+        async with aiohttp.ClientSession() as session:
+            auth0_client = Auth0Client(session)
+            auth = DukeEnergyAuth(
+                session,
+                auth0_client,
+                access_token=test_token,
+                refresh_token="refresh",  # noqa: S106
+                id_token=test_id_token,
+            )
+
+            with aioresponses() as mocked:
+                setup_auth_mocks(mocked, mock_duke_token_response)
+                setup_api_mocks(
+                    mocked,
+                    mock_account_list_response,
+                    mock_account_details_response,
+                )
+
+                client = DukeEnergy(auth)
+                await client.get_meters()
+
+                start = datetime.strptime("2024-01-01", "%Y-%m-%d")
+                end = datetime.strptime("2024-01-31", "%Y-%m-%d")
+                with pytest.raises(ValueError, match="Meter invalid_serial not found"):
+                    await client.get_energy_usage(
+                        "invalid_serial", "DAILY", "WEEK", start, end
+                    )
+
+    @pytest.mark.asyncio
+    async def test_get_json_logs_error_body_on_failure(
+        self,
+        mock_duke_token_response,
+        mock_account_list_response,
+    ):
+        """Test that _get_json logs error body and raises on non-OK response."""
+        test_token = _create_test_jwt(exp_offset_seconds=3600)
+        test_id_token = _create_test_jwt(exp_offset_seconds=3600)
+
+        async with aiohttp.ClientSession() as session:
+            auth0_client = Auth0Client(session)
+            auth = DukeEnergyAuth(
+                session,
+                auth0_client,
+                access_token=test_token,
+                refresh_token="refresh",  # noqa: S106
+                id_token=test_id_token,
+            )
+
+            with aioresponses() as mocked:
+                setup_auth_mocks(mocked, mock_duke_token_response)
+                pattern = re.compile(
+                    r"^https://api-v2\.cma\.duke-energy\.app/account-list"
+                )
+                mocked.get(pattern, status=500, body=b"Internal Server Error")
+
+                client = DukeEnergy(auth)
+                with pytest.raises(aiohttp.ClientResponseError):
+                    await client.get_accounts()
+
+    @pytest.mark.asyncio
+    async def test_post_json_logs_error_body_on_failure(
+        self,
+        mock_duke_token_response,
+        mock_account_list_response,
+        mock_account_details_response,
+    ):
+        """Test that _post_json logs error body and raises on non-OK response."""
+        test_token = _create_test_jwt(exp_offset_seconds=3600)
+        test_id_token = _create_test_jwt(exp_offset_seconds=3600)
+
+        async with aiohttp.ClientSession() as session:
+            auth0_client = Auth0Client(session)
+            auth = DukeEnergyAuth(
+                session,
+                auth0_client,
+                access_token=test_token,
+                refresh_token="refresh",  # noqa: S106
+                id_token=test_id_token,
+            )
+
+            with aioresponses() as mocked:
+                setup_auth_mocks(mocked, mock_duke_token_response)
+                setup_api_mocks(
+                    mocked,
+                    mock_account_list_response,
+                    mock_account_details_response,
+                )
+                pattern = re.compile(
+                    r"^https://api-v2\.cma\.duke-energy\.app/account/usage/graph"
+                )
+                mocked.post(pattern, status=400, body=b"Bad Request")
+
+                client = DukeEnergy(auth)
+                meters = await client.get_meters()
+                serial_number = next(iter(meters.keys()))
+
+                start = datetime.strptime("2024-01-01", "%Y-%m-%d")
+                end = datetime.strptime("2024-01-31", "%Y-%m-%d")
+                with pytest.raises(aiohttp.ClientResponseError):
+                    await client.get_energy_usage(
+                        serial_number, "DAILY", "WEEK", start, end
+                    )
+
 
 class TestUtilityFunctions:
     """Tests for utility functions."""

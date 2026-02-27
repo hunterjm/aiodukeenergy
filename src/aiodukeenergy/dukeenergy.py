@@ -199,6 +199,7 @@ class DukeEnergy:
                         year=start_date.year,
                         month=start_date.month,
                     )
+                    - timedelta(days=1)
                 ).isoformat(timespec="milliseconds"),
                 "agrmtStartDt": datetime.strptime(
                     meter["agreementActiveDate"], "%Y-%m-%d"
