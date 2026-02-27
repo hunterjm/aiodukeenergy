@@ -162,7 +162,7 @@ def mock_daily_usage_data():
 
     for day in range(31):
         current_date = start + timedelta(days=day)
-        date_str = current_date.strftime("%m/%d/%Y")
+        date_str = f"{current_date.month}/{current_date.strftime('%d/%Y')}"
         # Day 3 (index 2) will have 0 usage (detected as missing)
         usage_value = "0" if day == 2 else str(day * 10)
         daily_data.append(

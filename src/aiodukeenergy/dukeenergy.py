@@ -186,7 +186,20 @@ class DukeEnergy:
                 "serviceType": meter["serviceType"],
                 "intervalFrequency": interval,
                 "periodType": period,
-                "date": start_date.strftime(_DATE_FORMAT),
+                # Duke Energy API expects year+month+day (hourly) or year+month (daily)
+                # from startDate, combined with the current time of day.
+                "date": (
+                    datetime.now(start_date.tzinfo).replace(
+                        year=start_date.year,
+                        month=start_date.month,
+                        day=start_date.day,
+                    )
+                    if interval == "HOURLY"
+                    else datetime.now(start_date.tzinfo).replace(
+                        year=start_date.year,
+                        month=start_date.month,
+                    )
+                ).isoformat(timespec="milliseconds"),
                 "includeWeatherData": "true" if include_temperature else "false",
                 "agrmtStartDt": datetime.strptime(
                     meter["agreementActiveDate"], "%Y-%m-%d"
@@ -236,7 +249,7 @@ class DukeEnergy:
             expected_series = (
                 date.strftime("%I %p")
                 if interval == "HOURLY"
-                else date.strftime("%m/%d/%Y")
+                else f"{date.month}/{date.strftime('%d/%Y')}"
             )
 
             # Skip duplicate dates
