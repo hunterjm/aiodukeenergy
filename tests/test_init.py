@@ -242,9 +242,9 @@ def setup_api_mocks(mocked, account_list, account_details, usage_data=None):
     # Mock usage graph
     if usage_data is not None:
         pattern = re.compile(
-            r"^https://api-v2\.cma\.duke-energy\.app/account/usage/graph.*meterSerialNumber="
+            r"^https://api-v2\.cma\.duke-energy\.app/account/usage/graph"
         )
-        mocked.get(pattern, payload={"usageArray": usage_data}, repeat=True)
+        mocked.post(pattern, payload={"usageArray": usage_data}, repeat=True)
 
 
 def setup_auth_mocks(mocked, mock_duke_token_response, mock_auth0_token_response=None):
@@ -857,7 +857,7 @@ class TestUtilityFunctions:
         """Test extracting authorization code from valid redirect URL."""
         from aiodukeenergy.auth0 import extract_code_from_url
 
-        url = "cma-prod://login.duke-energy.com/callback?code=abc123&state=xyz"
+        url = "https://login.duke-energy.com/ios/com.duke-energy.app/callback?code=abc123&state=xyz"
         code = extract_code_from_url(url)
         assert code == "abc123"
 
@@ -865,7 +865,7 @@ class TestUtilityFunctions:
         """Test extracting authorization code when not present."""
         from aiodukeenergy.auth0 import extract_code_from_url
 
-        url = "cma-prod://login.duke-energy.com/callback?state=xyz"
+        url = "https://login.duke-energy.com/ios/com.duke-energy.app/callback?state=xyz"
         code = extract_code_from_url(url)
         assert code is None
 
@@ -873,7 +873,7 @@ class TestUtilityFunctions:
         """Test extracting authorization code with trailing parameters."""
         from aiodukeenergy.auth0 import extract_code_from_url
 
-        url = "cma-prod://callback?code=test_code_123&state=abc&other=param"
+        url = "https://login.duke-energy.com/ios/com.duke-energy.app/callback?code=test_code_123&state=abc&other=param"
         code = extract_code_from_url(url)
         assert code == "test_code_123"
 

@@ -186,7 +186,9 @@ class DukeEnergy:
                 "serviceType": meter["serviceType"],
                 "intervalFrequency": interval,
                 "periodType": period,
-                "date": datetime.now(start_date.tzinfo).isoformat(timespec="milliseconds"),
+                "date": datetime.now(start_date.tzinfo).isoformat(
+                    timespec="milliseconds"
+                ),
                 "agrmtStartDt": datetime.strptime(
                     meter["agreementActiveDate"], "%Y-%m-%d"
                 ).strftime(_DATE_FORMAT),
