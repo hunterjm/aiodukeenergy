@@ -186,9 +186,18 @@ class DukeEnergy:
                 "serviceType": meter["serviceType"],
                 "intervalFrequency": interval,
                 "periodType": period,
-                "date": datetime.now(start_date.tzinfo).isoformat(
-                    timespec="milliseconds"
-                ),
+                "date": ( #Duke Energy API expects the year, month and day (if hourly) to match the startDate, but with the current time. Odd, but matching POST reqeusts.
+                    datetime.now(start_date.tzinfo).replace(
+                        year=start_date.year,
+                        month=start_date.month,
+                        day=start_date.day,
+                    )
+                    if interval == "HOURLY"
+                    else datetime.now(start_date.tzinfo).replace(
+                        year=start_date.year,
+                        month=start_date.month,
+                    )
+                ).isoformat(timespec="milliseconds"),
                 "agrmtStartDt": datetime.strptime(
                     meter["agreementActiveDate"], "%Y-%m-%d"
                 ).strftime(_DATE_FORMAT),
@@ -236,7 +245,7 @@ class DukeEnergy:
             expected_series = (
                 date.strftime("%I %p")
                 if interval == "HOURLY"
-                else date.strftime("%-m/%d/%Y")
+                else f"{date.month}/{date.strftime('%d/%Y')}"
             )
 
             # Skip duplicate dates
