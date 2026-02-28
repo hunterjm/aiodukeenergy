@@ -1,5 +1,11 @@
 # Changelog
 
+## v1.0.1 (2026-02-27)
+
+### Fix
+
+- Expected_series format check for daily values (#15) ([`5c8aa42`](https://github.com/hunterjm/aiodukeenergy/commit/5c8aa422d77c40d9b6c89f8753ef66eb04ea0434))
+
 ## v1.0.0 (2026-01-11)
 
 ### Breaking
