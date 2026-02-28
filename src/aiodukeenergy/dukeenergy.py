@@ -187,7 +187,7 @@ class DukeEnergy:
                 "intervalFrequency": interval,
                 "periodType": period,
                 # Duke Energy API expects year+month+day (hourly) or year+month (daily)
-                # from startDate, combined with the current time of day.
+                # from startDate, combined with the current time of day offset by 1.
                 "date": (
                     datetime.now(start_date.tzinfo).replace(
                         year=start_date.year,
@@ -201,7 +201,6 @@ class DukeEnergy:
                     )
                     - timedelta(days=1)
                 ).isoformat(timespec="milliseconds"),
-                "includeWeatherData": "true" if include_temperature else "false",
                 "agrmtStartDt": datetime.strptime(
                     meter["agreementActiveDate"], "%Y-%m-%d"
                 ).strftime(_DATE_FORMAT),
