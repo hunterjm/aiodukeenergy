@@ -201,6 +201,7 @@ class DukeEnergy:
                     )
                     - timedelta(days=1)
                 ).isoformat(timespec="milliseconds"),
+                "includeWeatherData": "true" if include_temperature else "false",
                 "agrmtStartDt": datetime.strptime(
                     meter["agreementActiveDate"], "%Y-%m-%d"
                 ).strftime(_DATE_FORMAT),
