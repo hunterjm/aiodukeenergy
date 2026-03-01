@@ -7,8 +7,9 @@ since automated login is blocked by CAPTCHA.
 
 Flow:
 1. Call get_authorization_url() to get a URL for the user to open in a browser
-2. User logs in via browser and gets redirected to cma-prod:// URL with code
-3. Use a Chrome extension to capture the code from the cma-prod:// redirect
+2. User logs in via browser and gets redirected to
+   https://login.duke-energy.com/ios/ URL with code
+3. Use a Chrome extension to capture the code from the redirect
 4. Call exchange_code() with the authorization code to get tokens
 """
 
@@ -39,11 +40,16 @@ _TOKEN_URL = _AUTH0_BASE_URL / "oauth" / "token"
 _USERINFO_URL = _AUTH0_BASE_URL / "userinfo"
 
 # Mobile app client configuration (required for Duke Energy API token exchange)
-_CLIENT_ID = "uB67shrSSodJrNKTvZ0cWyAE9VRqkFwI"
-_REDIRECT_URI = "cma-prod://login.duke-energy.com/android/com.dukeenergy.customerapp.release/callback"
+_CLIENT_ID = "PitoKqxMh8thrFF8rRlYGrAs3LbSD2dj"
+# _REDIRECT_URI = "cma-prod://login.duke-energy.com/ios/com.dukeenergy.customerapp.release/callback"
+_REDIRECT_URI = "https://login.duke-energy.com/ios/com.duke-energy.app/callback"
 _AUTH0_CLIENT = base64.b64encode(
     json.dumps(
-        {"name": "Auth0.Android", "env": {"android": "35"}, "version": "3.8.0"}
+        {
+            "env": {"iOS": "26.2", "swift": "6.x"},
+            "version": "2.13.0",
+            "name": "Auth0.swift",
+        }
     ).encode()
 ).decode()
 
@@ -126,7 +132,7 @@ class Auth0Client:
         # Generate authorization URL for browser login
         auth_url, state, code_verifier = client.get_authorization_url()
 
-        # User opens auth_url in browser, logs in, gets redirected to cma-prod://
+        # User opens auth_url in browser, logs in, gets redirected to https://login.duke-energy.com/ios/
         # Use Chrome extension to capture the code from the redirect URL
 
         # Exchange code for tokens
@@ -154,7 +160,8 @@ class Auth0Client:
 
         This method generates PKCE credentials and builds an authorization URL
         that can be opened in a browser. After the user logs in, they will be
-        redirected to a cma-prod:// URL containing an authorization code.
+        redirected to a https://login.duke-energy.com/ios/
+        URL containing an authorization code.
 
         Use the Chrome extension from ./chrome-extension/ to capture
         the authorization code from the redirect.
@@ -214,7 +221,7 @@ class Auth0Client:
             "accept-language": "en_US",
             "auth0-client": _AUTH0_CLIENT,
             "Content-Type": "application/json; charset=utf-8",
-            "User-Agent": "okhttp/4.12.0",
+            "User-Agent": "Duke%20Energy/1241 CFNetwork/3860.300.31 Darwin/25.2.0",
         }
 
         response = await self.session.post(
@@ -255,7 +262,7 @@ class Auth0Client:
             "accept-language": "en_US",
             "auth0-client": _AUTH0_CLIENT,
             "Content-Type": "application/json; charset=utf-8",
-            "User-Agent": "okhttp/4.12.0",
+            "User-Agent": "Duke%20Energy/1241 CFNetwork/3860.300.31 Darwin/25.2.0",
         }
 
         response = await self.session.post(

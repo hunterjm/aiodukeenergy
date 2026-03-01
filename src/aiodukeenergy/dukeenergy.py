@@ -176,7 +176,7 @@ class DukeEnergy:
         if meter is None:
             raise ValueError(f"Meter {serial_number} not found")
 
-        result = await self._get_json(
+        result = await self._post_json(
             _BASE_URL.joinpath("account", "usage", "graph"),
             {
                 "srcSysCd": meter["account"]["srcSysCd"],
@@ -187,7 +187,7 @@ class DukeEnergy:
                 "intervalFrequency": interval,
                 "periodType": period,
                 # Duke Energy API expects year+month+day (hourly) or year+month (daily)
-                # from startDate, combined with the current time of day.
+                # from startDate, combined with the current time of day offset by 1.
                 "date": (
                     datetime.now(start_date.tzinfo).replace(
                         year=start_date.year,
@@ -199,8 +199,8 @@ class DukeEnergy:
                         year=start_date.year,
                         month=start_date.month,
                     )
+                    - timedelta(days=1)
                 ).isoformat(timespec="milliseconds"),
-                "includeWeatherData": "true" if include_temperature else "false",
                 "agrmtStartDt": datetime.strptime(
                     meter["agreementActiveDate"], "%Y-%m-%d"
                 ).strftime(_DATE_FORMAT),
@@ -213,7 +213,6 @@ class DukeEnergy:
                 "startDate": start_date.strftime(_DATE_FORMAT),
                 "endDate": end_date.strftime(_DATE_FORMAT),
                 "zipCode": meter["account"]["serviceAddressParsed"]["zipCode"],
-                "showYear": "true",
             },
         )
 
@@ -288,6 +287,31 @@ class DukeEnergy:
 
         response = await self._auth.request("GET", url, params=params or {})
         _LOGGER.debug("Response from %s: %s", url, response.status)
+        if not response.ok:
+            error_body = await response.text()
+            _LOGGER.debug("Error response body from %s: %s", url, error_body)
+        response.raise_for_status()
+        json_data = await response.json()
+        _LOGGER.debug("JSON from %s: %s", url, json_data)
+        return json_data
+
+    async def _post_json(
+        self, url: yarl.URL, body: dict[str, Any] | None = None
+    ) -> dict[str, Any]:
+        """
+        Post JSON to the Duke Energy API and return JSON response.
+
+        :param url: URL to request.
+        :param body: JSON body.
+        :returns: JSON response as dictionary.
+        """
+        _LOGGER.debug("Posting to %s with body: %s", url, body)
+
+        response = await self._auth.request("POST", url, json=body or {})
+        _LOGGER.debug("Response from %s: %s", url, response.status)
+        if not response.ok:
+            error_body = await response.text()
+            _LOGGER.debug("Error response body from %s: %s", url, error_body)
         response.raise_for_status()
         json_data = await response.json()
         _LOGGER.debug("JSON from %s: %s", url, json_data)
