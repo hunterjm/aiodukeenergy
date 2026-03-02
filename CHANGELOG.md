@@ -1,5 +1,15 @@
 # Changelog
 
+## v1.1.0 (2026-03-02)
+
+### Feature
+
+- Try version bump again to trigger release ([`c1f073d`](https://github.com/hunterjm/aiodukeenergy/commit/c1f073dceac481580235be0fe626aa3c4d8acc35))
+
+### Refactor
+
+- Ios authentication and endpoints (#17) ([`c85d7c0`](https://github.com/hunterjm/aiodukeenergy/commit/c85d7c0a72d5c4f40d98eed20a3a3c7c81ae7043))
+
 ## v1.0.1 (2026-02-27)
 
 ### Fix
