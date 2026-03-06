@@ -55,14 +55,19 @@ capture the mobile app's custom redirect URL.
 ### Setup
 
 1. Add the appropriate extension for your browser:
+
    #### chrome-extension
+
    - Download the [latest chrome-extension.zip](https://github.com/hunterjm/aiodukeenergy/releases/latest/download/chrome-extension.zip) from releases (or use `./chrome-extension/` from source)
    - Extract the zip file
    - Open Chrome and navigate to `chrome://extensions/`
    - Enable "Developer mode"
    - Click "Load unpacked" and select the extracted folder
-    #### safari-extension
+
+   #### safari-extension
+
    Requires XCode and a free developer account
+
    - Download the [latest safari-extension.zip](https://github.com/crash0verride11/ha-dukeenergy/releases/latest/download/safari-extension.zip) from releases (or use `./safari-extension/` from source)
    - Extract the zip file
    - Open the Xcode project
