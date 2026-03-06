@@ -72,14 +72,14 @@ capture the mobile app's custom redirect URL.
    - Build the extension again
    - Enable access to all URLs or a specific URL (https://login.duke-energy.com) in the extension settings
 
-3. Run the browser authentication script:
+2. Run the browser authentication script:
 
    ```bash
    cd examples
    python browser_auth.py
    ```
 
-4. The script will:
+3. The script will:
    - Open your browser to Duke Energy's login page
    - After you log in, the extension captures the authorization code
    - Exchange the code for API tokens
