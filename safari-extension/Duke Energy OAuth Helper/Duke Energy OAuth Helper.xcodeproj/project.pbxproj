@@ -1,0 +1,633 @@
+// !$*UTF8*$!
+{
+	archiveVersion = 1;
+	classes = {
+	};
+	objectVersion = 77;
+	objects = {
+
+/* Begin PBXBuildFile section */
+		EF5F3A672F59350B009C33E2 /* OAuthIcon.png in Resources */ = {isa = PBXBuildFile; fileRef = EF5F3A662F59350B009C33E2 /* OAuthIcon.png */; };
+		EF71D9ED2F462D4400099B61 /* AppDelegate.swift in Sources */ = {isa = PBXBuildFile; fileRef = EF71D9EC2F462D4400099B61 /* AppDelegate.swift */; };
+		EF71D9F12F462D4400099B61 /* Main.html in Resources */ = {isa = PBXBuildFile; fileRef = EF71D9EF2F462D4400099B61 /* Main.html */; };
+		EF71D9F52F462D4400099B61 /* Style.css in Resources */ = {isa = PBXBuildFile; fileRef = EF71D9F42F462D4400099B61 /* Style.css */; };
+		EF71D9F72F462D4400099B61 /* Script.js in Resources */ = {isa = PBXBuildFile; fileRef = EF71D9F62F462D4400099B61 /* Script.js */; };
+		EF71D9F92F462D4400099B61 /* ViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = EF71D9F82F462D4400099B61 /* ViewController.swift */; };
+		EF71D9FC2F462D4400099B61 /* Main.storyboard in Resources */ = {isa = PBXBuildFile; fileRef = EF71D9FA2F462D4400099B61 /* Main.storyboard */; };
+		EF71D9FE2F462D4500099B61 /* Assets.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = EF71D9FD2F462D4500099B61 /* Assets.xcassets */; };
+		EF71DA052F462D4500099B61 /* Duke Energy OAuth Helper Extension.appex in Embed Foundation Extensions */ = {isa = PBXBuildFile; fileRef = EF71DA042F462D4500099B61 /* Duke Energy OAuth Helper Extension.appex */; settings = {ATTRIBUTES = (RemoveHeadersOnCopy, ); }; };
+		EF71DA0A2F462D4500099B61 /* SafariWebExtensionHandler.swift in Sources */ = {isa = PBXBuildFile; fileRef = EF71DA092F462D4500099B61 /* SafariWebExtensionHandler.swift */; };
+		EF71DA292F462D4500099B61 /* Duke Energy OAuth Helper in Resources */ = {isa = PBXBuildFile; fileRef = EF71DA1F2F462D4500099B61 /* Duke Energy OAuth Helper */; };
+		EF9C432C2F5A43AE00D66557 /* capture.html in Resources */ = {isa = PBXBuildFile; fileRef = EF9C432B2F5A43AE00D66557 /* capture.html */; };
+		EF9DBAB62F4634E800E3F04E /* background.js in Resources */ = {isa = PBXBuildFile; fileRef = EF9DBAB52F4634E800E3F04E /* background.js */; };
+		EF9DBAB82F46355400E3F04E /* capture.js in Resources */ = {isa = PBXBuildFile; fileRef = EF9DBAB72F46355400E3F04E /* capture.js */; };
+		EF9DBAC02F4635DC00E3F04E /* popup.html in Resources */ = {isa = PBXBuildFile; fileRef = EF9DBABF2F4635DC00E3F04E /* popup.html */; };
+		EF9DBAC22F4635F000E3F04E /* manifest.json in Resources */ = {isa = PBXBuildFile; fileRef = EF9DBAC12F4635F000E3F04E /* manifest.json */; };
+/* End PBXBuildFile section */
+
+/* Begin PBXContainerItemProxy section */
+		EF71DA062F462D4500099B61 /* PBXContainerItemProxy */ = {
+			isa = PBXContainerItemProxy;
+			containerPortal = EF71D9E12F462D4400099B61 /* Project object */;
+			proxyType = 1;
+			remoteGlobalIDString = EF71DA032F462D4500099B61;
+			remoteInfo = "Duke Energy OAuth Helper Extension";
+		};
+/* End PBXContainerItemProxy section */
+
+/* Begin PBXCopyFilesBuildPhase section */
+		EF71DA112F462D4500099B61 /* Embed Foundation Extensions */ = {
+			isa = PBXCopyFilesBuildPhase;
+			buildActionMask = 2147483647;
+			dstPath = "";
+			dstSubfolderSpec = 13;
+			files = (
+				EF71DA052F462D4500099B61 /* Duke Energy OAuth Helper Extension.appex in Embed Foundation Extensions */,
+			);
+			name = "Embed Foundation Extensions";
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+/* End PBXCopyFilesBuildPhase section */
+
+/* Begin PBXFileReference section */
+		EF5F3A662F59350B009C33E2 /* OAuthIcon.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = OAuthIcon.png; sourceTree = "<group>"; };
+		EF71D9E92F462D4400099B61 /* Duke Energy OAuth Helper.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = "Duke Energy OAuth Helper.app"; sourceTree = BUILT_PRODUCTS_DIR; };
+		EF71D9EC2F462D4400099B61 /* AppDelegate.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AppDelegate.swift; sourceTree = "<group>"; };
+		EF71D9F02F462D4400099B61 /* Base */ = {isa = PBXFileReference; lastKnownFileType = text.html; name = Base; path = Base.lproj/Main.html; sourceTree = "<group>"; };
+		EF71D9F42F462D4400099B61 /* Style.css */ = {isa = PBXFileReference; lastKnownFileType = text.css; path = Style.css; sourceTree = "<group>"; };
+		EF71D9F62F462D4400099B61 /* Script.js */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.javascript; path = Script.js; sourceTree = "<group>"; };
+		EF71D9F82F462D4400099B61 /* ViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ViewController.swift; sourceTree = "<group>"; };
+		EF71D9FB2F462D4400099B61 /* Base */ = {isa = PBXFileReference; lastKnownFileType = file.storyboard; name = Base; path = Base.lproj/Main.storyboard; sourceTree = "<group>"; };
+		EF71D9FD2F462D4500099B61 /* Assets.xcassets */ = {isa = PBXFileReference; lastKnownFileType = folder.assetcatalog; path = Assets.xcassets; sourceTree = "<group>"; };
+		EF71D9FF2F462D4500099B61 /* Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = Info.plist; sourceTree = "<group>"; };
+		EF71DA042F462D4500099B61 /* Duke Energy OAuth Helper Extension.appex */ = {isa = PBXFileReference; explicitFileType = "wrapper.app-extension"; includeInIndex = 0; path = "Duke Energy OAuth Helper Extension.appex"; sourceTree = BUILT_PRODUCTS_DIR; };
+		EF71DA092F462D4500099B61 /* SafariWebExtensionHandler.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SafariWebExtensionHandler.swift; sourceTree = "<group>"; };
+		EF71DA0B2F462D4500099B61 /* Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = Info.plist; sourceTree = "<group>"; };
+		EF71DA1F2F462D4500099B61 /* Duke Energy OAuth Helper */ = {isa = PBXFileReference; lastKnownFileType = folder; path = "Duke Energy OAuth Helper"; sourceTree = SOURCE_ROOT; };
+		EF9C432B2F5A43AE00D66557 /* capture.html */ = {isa = PBXFileReference; lastKnownFileType = text.html; path = capture.html; sourceTree = "<group>"; };
+		EF9DBAB52F4634E800E3F04E /* background.js */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.javascript; path = background.js; sourceTree = "<group>"; };
+		EF9DBAB72F46355400E3F04E /* capture.js */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.javascript; path = capture.js; sourceTree = "<group>"; };
+		EF9DBABF2F4635DC00E3F04E /* popup.html */ = {isa = PBXFileReference; lastKnownFileType = text.html; path = popup.html; sourceTree = "<group>"; };
+		EF9DBAC12F4635F000E3F04E /* manifest.json */ = {isa = PBXFileReference; lastKnownFileType = text.json; path = manifest.json; sourceTree = "<group>"; };
+/* End PBXFileReference section */
+
+/* Begin PBXFrameworksBuildPhase section */
+		EF71D9E62F462D4400099B61 /* Frameworks */ = {
+			isa = PBXFrameworksBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+		EF71DA012F462D4500099B61 /* Frameworks */ = {
+			isa = PBXFrameworksBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+/* End PBXFrameworksBuildPhase section */
+
+/* Begin PBXGroup section */
+		EF71D9E02F462D4400099B61 = {
+			isa = PBXGroup;
+			children = (
+				EF71D9EB2F462D4400099B61 /* Duke Energy OAuth Helper */,
+				EF71DA082F462D4500099B61 /* Duke Energy OAuth Helper Extension */,
+				EF71D9EA2F462D4400099B61 /* Products */,
+			);
+			sourceTree = "<group>";
+		};
+		EF71D9EA2F462D4400099B61 /* Products */ = {
+			isa = PBXGroup;
+			children = (
+				EF71D9E92F462D4400099B61 /* Duke Energy OAuth Helper.app */,
+				EF71DA042F462D4500099B61 /* Duke Energy OAuth Helper Extension.appex */,
+			);
+			name = Products;
+			sourceTree = "<group>";
+		};
+		EF71D9EB2F462D4400099B61 /* Duke Energy OAuth Helper */ = {
+			isa = PBXGroup;
+			children = (
+				EF71D9EC2F462D4400099B61 /* AppDelegate.swift */,
+				EF71D9F82F462D4400099B61 /* ViewController.swift */,
+				EF71D9FA2F462D4400099B61 /* Main.storyboard */,
+				EF71D9FD2F462D4500099B61 /* Assets.xcassets */,
+				EF71D9FF2F462D4500099B61 /* Info.plist */,
+				EF71D9EE2F462D4400099B61 /* Resources */,
+			);
+			path = "Duke Energy OAuth Helper";
+			sourceTree = "<group>";
+		};
+		EF71D9EE2F462D4400099B61 /* Resources */ = {
+			isa = PBXGroup;
+			children = (
+				EF71D9EF2F462D4400099B61 /* Main.html */,
+				EF5F3A662F59350B009C33E2 /* OAuthIcon.png */,
+				EF71D9F42F462D4400099B61 /* Style.css */,
+				EF71D9F62F462D4400099B61 /* Script.js */,
+			);
+			path = Resources;
+			sourceTree = "<group>";
+		};
+		EF71DA082F462D4500099B61 /* Duke Energy OAuth Helper Extension */ = {
+			isa = PBXGroup;
+			children = (
+				EF71DA152F462D4500099B61 /* Resources */,
+				EF71DA092F462D4500099B61 /* SafariWebExtensionHandler.swift */,
+				EF71DA0B2F462D4500099B61 /* Info.plist */,
+			);
+			path = "Duke Energy OAuth Helper Extension";
+			sourceTree = "<group>";
+		};
+		EF71DA152F462D4500099B61 /* Resources */ = {
+			isa = PBXGroup;
+			children = (
+				EF9DBAB52F4634E800E3F04E /* background.js */,
+				EF9C432B2F5A43AE00D66557 /* capture.html */,
+				EF9DBABF2F4635DC00E3F04E /* popup.html */,
+				EF9DBAB72F46355400E3F04E /* capture.js */,
+				EF9DBAC12F4635F000E3F04E /* manifest.json */,
+				EF71DA1F2F462D4500099B61 /* Duke Energy OAuth Helper */,
+			);
+			name = Resources;
+			path = "Duke Energy OAuth Helper Extension";
+			sourceTree = SOURCE_ROOT;
+		};
+/* End PBXGroup section */
+
+/* Begin PBXNativeTarget section */
+		EF71D9E82F462D4400099B61 /* Duke Energy OAuth Helper */ = {
+			isa = PBXNativeTarget;
+			buildConfigurationList = EF71DA122F462D4500099B61 /* Build configuration list for PBXNativeTarget "Duke Energy OAuth Helper" */;
+			buildPhases = (
+				EF71D9E52F462D4400099B61 /* Sources */,
+				EF71D9E62F462D4400099B61 /* Frameworks */,
+				EF71D9E72F462D4400099B61 /* Resources */,
+				EF71DA112F462D4500099B61 /* Embed Foundation Extensions */,
+			);
+			buildRules = (
+			);
+			dependencies = (
+				EF71DA072F462D4500099B61 /* PBXTargetDependency */,
+			);
+			name = "Duke Energy OAuth Helper";
+			packageProductDependencies = (
+			);
+			productName = "Duke Energy OAuth Helper";
+			productReference = EF71D9E92F462D4400099B61 /* Duke Energy OAuth Helper.app */;
+			productType = "com.apple.product-type.application";
+		};
+		EF71DA032F462D4500099B61 /* Duke Energy OAuth Helper Extension */ = {
+			isa = PBXNativeTarget;
+			buildConfigurationList = EF71DA0E2F462D4500099B61 /* Build configuration list for PBXNativeTarget "Duke Energy OAuth Helper Extension" */;
+			buildPhases = (
+				EF71DA002F462D4500099B61 /* Sources */,
+				EF71DA012F462D4500099B61 /* Frameworks */,
+				EF71DA022F462D4500099B61 /* Resources */,
+			);
+			buildRules = (
+			);
+			dependencies = (
+			);
+			name = "Duke Energy OAuth Helper Extension";
+			packageProductDependencies = (
+			);
+			productName = "Duke Energy OAuth Helper Extension";
+			productReference = EF71DA042F462D4500099B61 /* Duke Energy OAuth Helper Extension.appex */;
+			productType = "com.apple.product-type.app-extension";
+		};
+/* End PBXNativeTarget section */
+
+/* Begin PBXProject section */
+		EF71D9E12F462D4400099B61 /* Project object */ = {
+			isa = PBXProject;
+			attributes = {
+				BuildIndependentTargetsInParallel = 1;
+				LastSwiftUpdateCheck = 2620;
+				LastUpgradeCheck = 2630;
+				TargetAttributes = {
+					EF71D9E82F462D4400099B61 = {
+						CreatedOnToolsVersion = 26.2;
+					};
+					EF71DA032F462D4500099B61 = {
+						CreatedOnToolsVersion = 26.2;
+					};
+				};
+			};
+			buildConfigurationList = EF71D9E42F462D4400099B61 /* Build configuration list for PBXProject "Duke Energy OAuth Helper" */;
+			developmentRegion = en;
+			hasScannedForEncodings = 0;
+			knownRegions = (
+				en,
+				Base,
+			);
+			mainGroup = EF71D9E02F462D4400099B61;
+			minimizedProjectReferenceProxies = 1;
+			preferredProjectObjectVersion = 77;
+			productRefGroup = EF71D9EA2F462D4400099B61 /* Products */;
+			projectDirPath = "";
+			projectRoot = "";
+			targets = (
+				EF71D9E82F462D4400099B61 /* Duke Energy OAuth Helper */,
+				EF71DA032F462D4500099B61 /* Duke Energy OAuth Helper Extension */,
+			);
+		};
+/* End PBXProject section */
+
+/* Begin PBXResourcesBuildPhase section */
+		EF71D9E72F462D4400099B61 /* Resources */ = {
+			isa = PBXResourcesBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+				EF71D9FC2F462D4400099B61 /* Main.storyboard in Resources */,
+				EF71D9F72F462D4400099B61 /* Script.js in Resources */,
+				EF5F3A672F59350B009C33E2 /* OAuthIcon.png in Resources */,
+				EF71D9F12F462D4400099B61 /* Main.html in Resources */,
+				EF71D9FE2F462D4500099B61 /* Assets.xcassets in Resources */,
+				EF71D9F52F462D4400099B61 /* Style.css in Resources */,
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+		EF71DA022F462D4500099B61 /* Resources */ = {
+			isa = PBXResourcesBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+				EF9DBAB82F46355400E3F04E /* capture.js in Resources */,
+				EF9DBAB62F4634E800E3F04E /* background.js in Resources */,
+				EF9DBAC02F4635DC00E3F04E /* popup.html in Resources */,
+				EF9C432C2F5A43AE00D66557 /* capture.html in Resources */,
+				EF9DBAC22F4635F000E3F04E /* manifest.json in Resources */,
+				EF71DA292F462D4500099B61 /* Duke Energy OAuth Helper in Resources */,
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+/* End PBXResourcesBuildPhase section */
+
+/* Begin PBXSourcesBuildPhase section */
+		EF71D9E52F462D4400099B61 /* Sources */ = {
+			isa = PBXSourcesBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+				EF71D9F92F462D4400099B61 /* ViewController.swift in Sources */,
+				EF71D9ED2F462D4400099B61 /* AppDelegate.swift in Sources */,
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+		EF71DA002F462D4500099B61 /* Sources */ = {
+			isa = PBXSourcesBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+				EF71DA0A2F462D4500099B61 /* SafariWebExtensionHandler.swift in Sources */,
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+/* End PBXSourcesBuildPhase section */
+
+/* Begin PBXTargetDependency section */
+		EF71DA072F462D4500099B61 /* PBXTargetDependency */ = {
+			isa = PBXTargetDependency;
+			target = EF71DA032F462D4500099B61 /* Duke Energy OAuth Helper Extension */;
+			targetProxy = EF71DA062F462D4500099B61 /* PBXContainerItemProxy */;
+		};
+/* End PBXTargetDependency section */
+
+/* Begin PBXVariantGroup section */
+		EF71D9EF2F462D4400099B61 /* Main.html */ = {
+			isa = PBXVariantGroup;
+			children = (
+				EF71D9F02F462D4400099B61 /* Base */,
+			);
+			name = Main.html;
+			sourceTree = "<group>";
+		};
+		EF71D9FA2F462D4400099B61 /* Main.storyboard */ = {
+			isa = PBXVariantGroup;
+			children = (
+				EF71D9FB2F462D4400099B61 /* Base */,
+			);
+			name = Main.storyboard;
+			sourceTree = "<group>";
+		};
+/* End PBXVariantGroup section */
+
+/* Begin XCBuildConfiguration section */
+		EF71DA0C2F462D4500099B61 /* Debug */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				ALWAYS_SEARCH_USER_PATHS = NO;
+				ASSETCATALOG_COMPILER_GENERATE_SWIFT_ASSET_SYMBOL_EXTENSIONS = YES;
+				CLANG_ANALYZER_NONNULL = YES;
+				CLANG_ANALYZER_NUMBER_OBJECT_CONVERSION = YES_AGGRESSIVE;
+				CLANG_CXX_LANGUAGE_STANDARD = "gnu++20";
+				CLANG_ENABLE_MODULES = YES;
+				CLANG_ENABLE_OBJC_ARC = YES;
+				CLANG_ENABLE_OBJC_WEAK = YES;
+				CLANG_WARN_BLOCK_CAPTURE_AUTORELEASING = YES;
+				CLANG_WARN_BOOL_CONVERSION = YES;
+				CLANG_WARN_COMMA = YES;
+				CLANG_WARN_CONSTANT_CONVERSION = YES;
+				CLANG_WARN_DEPRECATED_OBJC_IMPLEMENTATIONS = YES;
+				CLANG_WARN_DIRECT_OBJC_ISA_USAGE = YES_ERROR;
+				CLANG_WARN_DOCUMENTATION_COMMENTS = YES;
+				CLANG_WARN_EMPTY_BODY = YES;
+				CLANG_WARN_ENUM_CONVERSION = YES;
+				CLANG_WARN_INFINITE_RECURSION = YES;
+				CLANG_WARN_INT_CONVERSION = YES;
+				CLANG_WARN_NON_LITERAL_NULL_CONVERSION = YES;
+				CLANG_WARN_OBJC_IMPLICIT_RETAIN_SELF = YES;
+				CLANG_WARN_OBJC_LITERAL_CONVERSION = YES;
+				CLANG_WARN_OBJC_ROOT_CLASS = YES_ERROR;
+				CLANG_WARN_QUOTED_INCLUDE_IN_FRAMEWORK_HEADER = YES;
+				CLANG_WARN_RANGE_LOOP_ANALYSIS = YES;
+				CLANG_WARN_STRICT_PROTOTYPES = YES;
+				CLANG_WARN_SUSPICIOUS_MOVE = YES;
+				CLANG_WARN_UNGUARDED_AVAILABILITY = YES_AGGRESSIVE;
+				CLANG_WARN_UNREACHABLE_CODE = YES;
+				CLANG_WARN__DUPLICATE_METHOD_MATCH = YES;
+				COPY_PHASE_STRIP = NO;
+				DEAD_CODE_STRIPPING = YES;
+				DEBUG_INFORMATION_FORMAT = dwarf;
+				ENABLE_STRICT_OBJC_MSGSEND = YES;
+				ENABLE_TESTABILITY = YES;
+				ENABLE_USER_SCRIPT_SANDBOXING = YES;
+				GCC_C_LANGUAGE_STANDARD = gnu17;
+				GCC_DYNAMIC_NO_PIC = NO;
+				GCC_NO_COMMON_BLOCKS = YES;
+				GCC_OPTIMIZATION_LEVEL = 0;
+				GCC_PREPROCESSOR_DEFINITIONS = (
+					"DEBUG=1",
+					"$(inherited)",
+				);
+				GCC_WARN_64_TO_32_BIT_CONVERSION = YES;
+				GCC_WARN_ABOUT_RETURN_TYPE = YES_ERROR;
+				GCC_WARN_UNDECLARED_SELECTOR = YES;
+				GCC_WARN_UNINITIALIZED_AUTOS = YES_AGGRESSIVE;
+				GCC_WARN_UNUSED_FUNCTION = YES;
+				GCC_WARN_UNUSED_VARIABLE = YES;
+				LOCALIZATION_PREFERS_STRING_CATALOGS = YES;
+				MACOSX_DEPLOYMENT_TARGET = 26.2;
+				MTL_ENABLE_DEBUG_INFO = INCLUDE_SOURCE;
+				MTL_FAST_MATH = YES;
+				ONLY_ACTIVE_ARCH = YES;
+				SDKROOT = macosx;
+				STRING_CATALOG_GENERATE_SYMBOLS = YES;
+				SWIFT_ACTIVE_COMPILATION_CONDITIONS = "DEBUG $(inherited)";
+				SWIFT_OPTIMIZATION_LEVEL = "-Onone";
+			};
+			name = Debug;
+		};
+		EF71DA0D2F462D4500099B61 /* Release */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				ALWAYS_SEARCH_USER_PATHS = NO;
+				ASSETCATALOG_COMPILER_GENERATE_SWIFT_ASSET_SYMBOL_EXTENSIONS = YES;
+				CLANG_ANALYZER_NONNULL = YES;
+				CLANG_ANALYZER_NUMBER_OBJECT_CONVERSION = YES_AGGRESSIVE;
+				CLANG_CXX_LANGUAGE_STANDARD = "gnu++20";
+				CLANG_ENABLE_MODULES = YES;
+				CLANG_ENABLE_OBJC_ARC = YES;
+				CLANG_ENABLE_OBJC_WEAK = YES;
+				CLANG_WARN_BLOCK_CAPTURE_AUTORELEASING = YES;
+				CLANG_WARN_BOOL_CONVERSION = YES;
+				CLANG_WARN_COMMA = YES;
+				CLANG_WARN_CONSTANT_CONVERSION = YES;
+				CLANG_WARN_DEPRECATED_OBJC_IMPLEMENTATIONS = YES;
+				CLANG_WARN_DIRECT_OBJC_ISA_USAGE = YES_ERROR;
+				CLANG_WARN_DOCUMENTATION_COMMENTS = YES;
+				CLANG_WARN_EMPTY_BODY = YES;
+				CLANG_WARN_ENUM_CONVERSION = YES;
+				CLANG_WARN_INFINITE_RECURSION = YES;
+				CLANG_WARN_INT_CONVERSION = YES;
+				CLANG_WARN_NON_LITERAL_NULL_CONVERSION = YES;
+				CLANG_WARN_OBJC_IMPLICIT_RETAIN_SELF = YES;
+				CLANG_WARN_OBJC_LITERAL_CONVERSION = YES;
+				CLANG_WARN_OBJC_ROOT_CLASS = YES_ERROR;
+				CLANG_WARN_QUOTED_INCLUDE_IN_FRAMEWORK_HEADER = YES;
+				CLANG_WARN_RANGE_LOOP_ANALYSIS = YES;
+				CLANG_WARN_STRICT_PROTOTYPES = YES;
+				CLANG_WARN_SUSPICIOUS_MOVE = YES;
+				CLANG_WARN_UNGUARDED_AVAILABILITY = YES_AGGRESSIVE;
+				CLANG_WARN_UNREACHABLE_CODE = YES;
+				CLANG_WARN__DUPLICATE_METHOD_MATCH = YES;
+				COPY_PHASE_STRIP = NO;
+				DEAD_CODE_STRIPPING = YES;
+				DEBUG_INFORMATION_FORMAT = "dwarf-with-dsym";
+				ENABLE_NS_ASSERTIONS = NO;
+				ENABLE_STRICT_OBJC_MSGSEND = YES;
+				ENABLE_USER_SCRIPT_SANDBOXING = YES;
+				GCC_C_LANGUAGE_STANDARD = gnu17;
+				GCC_NO_COMMON_BLOCKS = YES;
+				GCC_WARN_64_TO_32_BIT_CONVERSION = YES;
+				GCC_WARN_ABOUT_RETURN_TYPE = YES_ERROR;
+				GCC_WARN_UNDECLARED_SELECTOR = YES;
+				GCC_WARN_UNINITIALIZED_AUTOS = YES_AGGRESSIVE;
+				GCC_WARN_UNUSED_FUNCTION = YES;
+				GCC_WARN_UNUSED_VARIABLE = YES;
+				LOCALIZATION_PREFERS_STRING_CATALOGS = YES;
+				MACOSX_DEPLOYMENT_TARGET = 26.2;
+				MTL_ENABLE_DEBUG_INFO = NO;
+				MTL_FAST_MATH = YES;
+				SDKROOT = macosx;
+				STRING_CATALOG_GENERATE_SYMBOLS = YES;
+				SWIFT_COMPILATION_MODE = wholemodule;
+			};
+			name = Release;
+		};
+		EF71DA0F2F462D4500099B61 /* Debug */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				"CODE_SIGN_IDENTITY[sdk=macosx*]" = "Apple Development";
+				CODE_SIGN_STYLE = Automatic;
+				CURRENT_PROJECT_VERSION = 1;
+				DEAD_CODE_STRIPPING = YES;
+				DEVELOPMENT_TEAM = "";
+				ENABLE_APP_SANDBOX = YES;
+				ENABLE_HARDENED_RUNTIME = YES;
+				ENABLE_USER_SELECTED_FILES = readonly;
+				GENERATE_INFOPLIST_FILE = YES;
+				INFOPLIST_FILE = "Duke Energy OAuth Helper Extension/Info.plist";
+				INFOPLIST_KEY_CFBundleDisplayName = "Duke Energy OAuth Helper Extension";
+				INFOPLIST_KEY_NSHumanReadableCopyright = "";
+				LD_RUNPATH_SEARCH_PATHS = (
+					"$(inherited)",
+					"@executable_path/../Frameworks",
+					"@executable_path/../../../../Frameworks",
+				);
+				MACOSX_DEPLOYMENT_TARGET = 11.0;
+				MARKETING_VERSION = 1.0;
+				OTHER_LDFLAGS = (
+					"-framework",
+					SafariServices,
+				);
+				PRODUCT_BUNDLE_IDENTIFIER = "com.local.duke-energy-oauth-helper.Extension";
+				PRODUCT_NAME = "$(TARGET_NAME)";
+				SKIP_INSTALL = YES;
+				STRING_CATALOG_GENERATE_SYMBOLS = YES;
+				SWIFT_APPROACHABLE_CONCURRENCY = YES;
+				SWIFT_EMIT_LOC_STRINGS = YES;
+				SWIFT_UPCOMING_FEATURE_MEMBER_IMPORT_VISIBILITY = YES;
+				SWIFT_VERSION = 5.0;
+			};
+			name = Debug;
+		};
+		EF71DA102F462D4500099B61 /* Release */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				"CODE_SIGN_IDENTITY[sdk=macosx*]" = "Apple Development";
+				CODE_SIGN_STYLE = Automatic;
+				CURRENT_PROJECT_VERSION = 1;
+				DEAD_CODE_STRIPPING = YES;
+				DEVELOPMENT_TEAM = "";
+				ENABLE_APP_SANDBOX = YES;
+				ENABLE_HARDENED_RUNTIME = YES;
+				ENABLE_USER_SELECTED_FILES = readonly;
+				GENERATE_INFOPLIST_FILE = YES;
+				INFOPLIST_FILE = "Duke Energy OAuth Helper Extension/Info.plist";
+				INFOPLIST_KEY_CFBundleDisplayName = "Duke Energy OAuth Helper Extension";
+				INFOPLIST_KEY_NSHumanReadableCopyright = "";
+				LD_RUNPATH_SEARCH_PATHS = (
+					"$(inherited)",
+					"@executable_path/../Frameworks",
+					"@executable_path/../../../../Frameworks",
+				);
+				MACOSX_DEPLOYMENT_TARGET = 11.0;
+				MARKETING_VERSION = 1.0;
+				OTHER_LDFLAGS = (
+					"-framework",
+					SafariServices,
+				);
+				PRODUCT_BUNDLE_IDENTIFIER = "com.local.duke-energy-oauth-helper.Extension";
+				PRODUCT_NAME = "$(TARGET_NAME)";
+				SKIP_INSTALL = YES;
+				STRING_CATALOG_GENERATE_SYMBOLS = YES;
+				SWIFT_APPROACHABLE_CONCURRENCY = YES;
+				SWIFT_EMIT_LOC_STRINGS = YES;
+				SWIFT_UPCOMING_FEATURE_MEMBER_IMPORT_VISIBILITY = YES;
+				SWIFT_VERSION = 5.0;
+			};
+			name = Release;
+		};
+		EF71DA132F462D4500099B61 /* Debug */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
+				ASSETCATALOG_COMPILER_GLOBAL_ACCENT_COLOR_NAME = AccentColor;
+				"CODE_SIGN_IDENTITY[sdk=macosx*]" = "Apple Development";
+				CODE_SIGN_STYLE = Automatic;
+				COMBINE_HIDPI_IMAGES = YES;
+				CURRENT_PROJECT_VERSION = 1;
+				DEAD_CODE_STRIPPING = YES;
+				DEVELOPMENT_TEAM = "";
+				ENABLE_APP_SANDBOX = YES;
+				ENABLE_HARDENED_RUNTIME = YES;
+				ENABLE_OUTGOING_NETWORK_CONNECTIONS = YES;
+				ENABLE_USER_SELECTED_FILES = readonly;
+				GENERATE_INFOPLIST_FILE = YES;
+				INFOPLIST_FILE = "Duke Energy OAuth Helper/Info.plist";
+				INFOPLIST_KEY_CFBundleDisplayName = "Duke Energy OAuth Helper";
+				INFOPLIST_KEY_NSHumanReadableCopyright = "";
+				INFOPLIST_KEY_NSMainStoryboardFile = Main;
+				INFOPLIST_KEY_NSPrincipalClass = NSApplication;
+				LD_RUNPATH_SEARCH_PATHS = (
+					"$(inherited)",
+					"@executable_path/../Frameworks",
+				);
+				MARKETING_VERSION = 1.0;
+				OTHER_LDFLAGS = (
+					"-framework",
+					SafariServices,
+					"-framework",
+					WebKit,
+				);
+				PRODUCT_BUNDLE_IDENTIFIER = "com.local.duke-energy-oauth-helper";
+				PRODUCT_NAME = "$(TARGET_NAME)";
+				REGISTER_APP_GROUPS = YES;
+				STRING_CATALOG_GENERATE_SYMBOLS = YES;
+				SWIFT_APPROACHABLE_CONCURRENCY = YES;
+				SWIFT_DEFAULT_ACTOR_ISOLATION = MainActor;
+				SWIFT_EMIT_LOC_STRINGS = YES;
+				SWIFT_UPCOMING_FEATURE_MEMBER_IMPORT_VISIBILITY = YES;
+				SWIFT_VERSION = 5.0;
+			};
+			name = Debug;
+		};
+		EF71DA142F462D4500099B61 /* Release */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
+				ASSETCATALOG_COMPILER_GLOBAL_ACCENT_COLOR_NAME = AccentColor;
+				"CODE_SIGN_IDENTITY[sdk=macosx*]" = "Apple Development";
+				CODE_SIGN_STYLE = Automatic;
+				COMBINE_HIDPI_IMAGES = YES;
+				CURRENT_PROJECT_VERSION = 1;
+				DEAD_CODE_STRIPPING = YES;
+				DEVELOPMENT_TEAM = "";
+				ENABLE_APP_SANDBOX = YES;
+				ENABLE_HARDENED_RUNTIME = YES;
+				ENABLE_OUTGOING_NETWORK_CONNECTIONS = YES;
+				ENABLE_USER_SELECTED_FILES = readonly;
+				GENERATE_INFOPLIST_FILE = YES;
+				INFOPLIST_FILE = "Duke Energy OAuth Helper/Info.plist";
+				INFOPLIST_KEY_CFBundleDisplayName = "Duke Energy OAuth Helper";
+				INFOPLIST_KEY_NSHumanReadableCopyright = "";
+				INFOPLIST_KEY_NSMainStoryboardFile = Main;
+				INFOPLIST_KEY_NSPrincipalClass = NSApplication;
+				LD_RUNPATH_SEARCH_PATHS = (
+					"$(inherited)",
+					"@executable_path/../Frameworks",
+				);
+				MARKETING_VERSION = 1.0;
+				OTHER_LDFLAGS = (
+					"-framework",
+					SafariServices,
+					"-framework",
+					WebKit,
+				);
+				PRODUCT_BUNDLE_IDENTIFIER = "com.local.duke-energy-oauth-helper";
+				PRODUCT_NAME = "$(TARGET_NAME)";
+				REGISTER_APP_GROUPS = YES;
+				STRING_CATALOG_GENERATE_SYMBOLS = YES;
+				SWIFT_APPROACHABLE_CONCURRENCY = YES;
+				SWIFT_DEFAULT_ACTOR_ISOLATION = MainActor;
+				SWIFT_EMIT_LOC_STRINGS = YES;
+				SWIFT_UPCOMING_FEATURE_MEMBER_IMPORT_VISIBILITY = YES;
+				SWIFT_VERSION = 5.0;
+			};
+			name = Release;
+		};
+/* End XCBuildConfiguration section */
+
+/* Begin XCConfigurationList section */
+		EF71D9E42F462D4400099B61 /* Build configuration list for PBXProject "Duke Energy OAuth Helper" */ = {
+			isa = XCConfigurationList;
+			buildConfigurations = (
+				EF71DA0C2F462D4500099B61 /* Debug */,
+				EF71DA0D2F462D4500099B61 /* Release */,
+			);
+			defaultConfigurationIsVisible = 0;
+			defaultConfigurationName = Release;
+		};
+		EF71DA0E2F462D4500099B61 /* Build configuration list for PBXNativeTarget "Duke Energy OAuth Helper Extension" */ = {
+			isa = XCConfigurationList;
+			buildConfigurations = (
+				EF71DA0F2F462D4500099B61 /* Debug */,
+				EF71DA102F462D4500099B61 /* Release */,
+			);
+			defaultConfigurationIsVisible = 0;
+			defaultConfigurationName = Release;
+		};
+		EF71DA122F462D4500099B61 /* Build configuration list for PBXNativeTarget "Duke Energy OAuth Helper" */ = {
+			isa = XCConfigurationList;
+			buildConfigurations = (
+				EF71DA132F462D4500099B61 /* Debug */,
+				EF71DA142F462D4500099B61 /* Release */,
+			);
+			defaultConfigurationIsVisible = 0;
+			defaultConfigurationName = Release;
+		};
+/* End XCConfigurationList section */
+	};
+	rootObject = EF71D9E12F462D4400099B61 /* Project object */;
+}
