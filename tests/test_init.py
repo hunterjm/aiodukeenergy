@@ -178,7 +178,7 @@ def mock_daily_usage_data():
 
 @pytest.fixture
 def mock_partial_daily_usage_data():
-    """Create mock usage data for a partial week (API returns fewer days than requested)."""
+    """Create mock usage data for a partial week (fewer days than requested)."""
     partial_data = []
     start = datetime.strptime("2024-01-01", "%Y-%m-%d")
 
@@ -806,9 +806,9 @@ class TestUsageAPI:
                 day2_1am = start + timedelta(days=1, hours=1)
                 if day2_1am in result["data"]:
                     energy_value = result["data"][day2_1am]["energy"]
-                    assert energy_value != 900.0, (
-                        "Should not have the duplicate hour value (900.0)"
-                    )
+                    assert (
+                        energy_value != 900.0
+                    ), "Should not have the duplicate hour value (900.0)"
 
 
 class TestErrorHandling:
