@@ -186,7 +186,7 @@ class DukeEnergy:
                 "serviceType": meter["serviceType"],
                 "intervalFrequency": interval,
                 "periodType": period,
-                #Duke uses selected date with the current date's H:M:S:M
+                # Duke uses selected date with the current date's H:M:S:M
                 "date": (
                     datetime.now(start_date.tzinfo).replace(
                         year=start_date.year,
