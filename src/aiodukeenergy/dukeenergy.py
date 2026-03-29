@@ -215,8 +215,11 @@ class DukeEnergy:
         num_expected_values = (effective_end - start_date).days + 1
 
         # Extract temperature data
-        temp_len = min(num_expected_values, usage_len)
-        temp = [usage_array[i]["temperatureAvg"] for i in range(temp_len)]
+        temp = [
+            usage_array[i]["temperatureAvg"]
+            for i in range(min(num_expected_values, usage_len))
+        ]
+        temp_len = len(temp)
 
         # If interval is hourly, multiply the number of values by 24
         if interval == "HOURLY":
