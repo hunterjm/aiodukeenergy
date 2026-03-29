@@ -211,11 +211,12 @@ class DukeEnergy:
 
         usage_array = result["usageArray"]
         usage_len = len(usage_array)
-        num_expected_values = (end_date - start_date).days + 1
+        effective_end = min(end_date, datetime.now(end_date.tzinfo) - timedelta(days=1))
+        num_expected_values = (effective_end - start_date).days + 1
 
         # Extract temperature data
-        temp = [usage_array[i]["temperatureAvg"] for i in range(num_expected_values)]
-        temp_len = len(temp)
+        temp_len = min(num_expected_values, usage_len)
+        temp = [usage_array[i]["temperatureAvg"] for i in range(temp_len)]
 
         # If interval is hourly, multiply the number of values by 24
         if interval == "HOURLY":
@@ -244,6 +245,11 @@ class DukeEnergy:
                 else f"{date.month}/{date.strftime('%d/%Y')}"
             )
 
+            # If fewer entries than expected date range, treat remainder as missing
+            if n >= usage_len:
+                missing.append(date)
+                continue
+
             # Skip duplicate dates
             if n > 0 and usage_array[n]["date"] == usage_array[n - 1]["date"]:
                 duplicates += 1
@@ -255,7 +261,7 @@ class DukeEnergy:
                 offset += 1
                 continue
 
-            if n >= usage_len or not float(usage_array[n]["usage"]) > 0:
+            if not float(usage_array[n]["usage"]) > 0:
                 missing.append(date)
                 continue
 
