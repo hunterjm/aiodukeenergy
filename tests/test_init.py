@@ -798,9 +798,9 @@ class TestUsageAPI:
                 timestamps = sorted(result["data"].keys())
                 for i in range(1, len(timestamps)):
                     time_diff = timestamps[i] - timestamps[i - 1]
-                    assert time_diff == timedelta(hours=1), (
-                        f"Expected 1 hour difference, got {time_diff}"
-                    )
+                    assert time_diff == timedelta(
+                        hours=1
+                    ), f"Expected 1 hour difference, got {time_diff}"
 
                 # The 1 AM on day 2 should have the first value, not the duplicate
                 day2_1am = start + timedelta(days=1, hours=1)
