@@ -186,20 +186,13 @@ class DukeEnergy:
                 "serviceType": meter["serviceType"],
                 "intervalFrequency": interval,
                 "periodType": period,
-                # Duke Energy API expects year+month+day (hourly) or year+month (daily)
-                # from startDate, combined with the current time of day offset by 1.
+                #Duke uses selected date with the current date's H:M:S:M
                 "date": (
                     datetime.now(start_date.tzinfo).replace(
                         year=start_date.year,
                         month=start_date.month,
                         day=start_date.day,
                     )
-                    if interval == "HOURLY"
-                    else datetime.now(start_date.tzinfo).replace(
-                        year=start_date.year,
-                        month=start_date.month,
-                    )
-                    - timedelta(days=1)
                 ).isoformat(timespec="milliseconds"),
                 "agrmtStartDt": datetime.strptime(
                     meter["agreementActiveDate"], "%Y-%m-%d"
