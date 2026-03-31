@@ -211,8 +211,7 @@ class DukeEnergy:
 
         usage_array = result["usageArray"]
         usage_len = len(usage_array)
-        effective_end = min(end_date, datetime.now(end_date.tzinfo) - timedelta(days=1))
-        num_expected_values = (effective_end - start_date).days + 1
+        num_expected_values = (end_date - start_date).days + 1
 
         # Extract temperature data
         temp = [
