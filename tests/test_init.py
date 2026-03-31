@@ -177,6 +177,26 @@ def mock_daily_usage_data():
 
 
 @pytest.fixture
+def mock_partial_daily_usage_data():
+    """Create mock usage data for a partial week (fewer days than requested)."""
+    partial_data = []
+    start = datetime.strptime("2024-01-01", "%Y-%m-%d")
+
+    for day in range(3):
+        current_date = start + timedelta(days=day)
+        date_str = f"{current_date.month}/{current_date.strftime('%d/%Y')}"
+        partial_data.append(
+            {
+                "date": date_str,
+                "usage": str((day + 1) * 10),
+                "temperatureAvg": 30,
+            }
+        )
+
+    return partial_data
+
+
+@pytest.fixture
 def mock_duplicate_hours_data():
     """Create mock usage data with duplicate hours (simulating DST fall back)."""
     hour_formats = [
@@ -664,6 +684,60 @@ class TestUsageAPI:
                 # Day 3 should be missing (0 usage)
                 missing_day = start + timedelta(days=2)
                 assert missing_day in result["missing"]
+
+    @pytest.mark.asyncio
+    async def test_daily_energy_usage_partial_week(
+        self,
+        mock_duke_token_response,
+        mock_account_list_response,
+        mock_account_details_response,
+        mock_partial_daily_usage_data,
+    ):
+        """Test daily energy usage when API returns fewer days than requested."""
+        test_token = _create_test_jwt(exp_offset_seconds=3600)
+        test_id_token = _create_test_jwt(exp_offset_seconds=3600)
+
+        async with aiohttp.ClientSession() as session:
+            auth0_client = Auth0Client(session)
+            auth = DukeEnergyAuth(
+                session,
+                auth0_client,
+                access_token=test_token,
+                refresh_token="refresh",  # noqa: S106
+                id_token=test_id_token,
+            )
+
+            with aioresponses() as mocked:
+                setup_auth_mocks(mocked, mock_duke_token_response)
+                setup_api_mocks(
+                    mocked,
+                    mock_account_list_response,
+                    mock_account_details_response,
+                    mock_partial_daily_usage_data,
+                )
+
+                client = DukeEnergy(auth)
+
+                meters = await client.get_meters()
+                serial_number = next(iter(meters.keys()))
+
+                # Request a full week but API only returns 3 days
+                start = datetime.strptime("2024-01-01", "%Y-%m-%d")
+                end = datetime.strptime("2024-01-07", "%Y-%m-%d")
+                result = await client.get_energy_usage(
+                    serial_number,
+                    "DAILY",
+                    "WEEK",
+                    start,
+                    end,
+                )
+
+                # Only the 3 returned days should have data
+                assert len(result["data"]) == 3
+                # The remaining 4 days should be marked missing
+                assert len(result["missing"]) == 4
+                for day in range(3, 7):
+                    assert start + timedelta(days=day) in result["missing"]
 
     @pytest.mark.asyncio
     async def test_energy_usage_duplicate_hours(
