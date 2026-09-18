@@ -46,8 +46,8 @@ _REDIRECT_URI = "https://login.duke-energy.com/ios/com.duke-energy.app/callback"
 _AUTH0_CLIENT = base64.b64encode(
     json.dumps(
         {
-            "env": {"iOS": "26.2", "swift": "6.x"},
-            "version": "2.13.0",
+            "env": {"iOS": "27.0", "swift": "6.x"},
+            "version": "2.19.0",
             "name": "Auth0.swift",
         }
     ).encode()
