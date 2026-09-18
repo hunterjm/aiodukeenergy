@@ -221,7 +221,7 @@ class Auth0Client:
             "accept-language": "en_US",
             "auth0-client": _AUTH0_CLIENT,
             "Content-Type": "application/json; charset=utf-8",
-            "User-Agent": "Duke%20Energy/1241 CFNetwork/3860.300.31 Darwin/25.2.0",
+            "User-Agent": "Duke%20Energy/1374 CFNetwork/3896.100.1.2.1 Darwin/27.0.0",
         }
 
         response = await self.session.post(
@@ -262,7 +262,7 @@ class Auth0Client:
             "accept-language": "en_US",
             "auth0-client": _AUTH0_CLIENT,
             "Content-Type": "application/json; charset=utf-8",
-            "User-Agent": "Duke%20Energy/1241 CFNetwork/3860.300.31 Darwin/25.2.0",
+            "User-Agent": "Duke%20Energy/1374 CFNetwork/3896.100.1.2.1 Darwin/27.0.0",
         }
 
         response = await self.session.post(

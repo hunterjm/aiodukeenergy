@@ -184,7 +184,7 @@ class AbstractDukeEnergyAuth(ABC):
             "Content-Type": "application/json; charset=utf-8",
             "Accept": "application/json",
             "platform": "iOS",
-            "User-Agent": "Duke%20Energy/1241 CFNetwork/3860.300.31 Darwin/25.2.0",
+            "User-Agent": "Duke%20Energy/1374 CFNetwork/3896.100.1.2.1 Darwin/27.0.0",
         }
 
         _LOGGER.debug("Exchanging id_token for Duke Energy API token")
@@ -250,7 +250,7 @@ class AbstractDukeEnergyAuth(ABC):
                 "Content-Type": "application/json; charset=utf-8",
                 "Accept": "application/json",
                 "platform": "iOS",
-                "User-Agent": "Duke%20Energy/1250 CFNetwork/3860.300.31 Darwin/25.2.0",
+                "User-Agent": "Duke%20Energy/1374 CFNetwork/3896.100.1.2.1 Darwin/27.0.0",
             }
         )
 
