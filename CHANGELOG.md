@@ -1,5 +1,11 @@
 # Changelog
 
+## v1.1.1 (2026-09-19)
+
+### Fix
+
+- Blocked user agent, bump version number (take 2) (#22) ([`d0398b7`](https://github.com/hunterjm/aiodukeenergy/commit/d0398b74870e0940997389a289086857898bb6d4))
+
 ## v1.1.0 (2026-03-02)
 
 ### Feature
