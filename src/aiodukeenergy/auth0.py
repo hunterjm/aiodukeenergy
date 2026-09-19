@@ -46,8 +46,8 @@ _REDIRECT_URI = "https://login.duke-energy.com/ios/com.duke-energy.app/callback"
 _AUTH0_CLIENT = base64.b64encode(
     json.dumps(
         {
-            "env": {"iOS": "26.2", "swift": "6.x"},
-            "version": "2.13.0",
+            "env": {"iOS": "27.0", "swift": "6.x"},
+            "version": "2.19.0",
             "name": "Auth0.swift",
         }
     ).encode()
@@ -221,7 +221,7 @@ class Auth0Client:
             "accept-language": "en_US",
             "auth0-client": _AUTH0_CLIENT,
             "Content-Type": "application/json; charset=utf-8",
-            "User-Agent": "Duke%20Energy/1241 CFNetwork/3860.300.31 Darwin/25.2.0",
+            "User-Agent": "Duke%20Energy/1374 CFNetwork/3896.100.1.2.1 Darwin/27.0.0",
         }
 
         response = await self.session.post(
@@ -262,7 +262,7 @@ class Auth0Client:
             "accept-language": "en_US",
             "auth0-client": _AUTH0_CLIENT,
             "Content-Type": "application/json; charset=utf-8",
-            "User-Agent": "Duke%20Energy/1241 CFNetwork/3860.300.31 Darwin/25.2.0",
+            "User-Agent": "Duke%20Energy/1374 CFNetwork/3896.100.1.2.1 Darwin/27.0.0",
         }
 
         response = await self.session.post(
