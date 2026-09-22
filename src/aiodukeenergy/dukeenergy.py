@@ -186,20 +186,13 @@ class DukeEnergy:
                 "serviceType": meter["serviceType"],
                 "intervalFrequency": interval,
                 "periodType": period,
-                # Duke Energy API expects year+month+day (hourly) or year+month (daily)
-                # from startDate, combined with the current time of day offset by 1.
+                # Duke uses selected date with the current date's H:M:S:M
                 "date": (
                     datetime.now(start_date.tzinfo).replace(
                         year=start_date.year,
                         month=start_date.month,
                         day=start_date.day,
                     )
-                    if interval == "HOURLY"
-                    else datetime.now(start_date.tzinfo).replace(
-                        year=start_date.year,
-                        month=start_date.month,
-                    )
-                    - timedelta(days=1)
                 ).isoformat(timespec="milliseconds"),
                 "agrmtStartDt": datetime.strptime(
                     meter["agreementActiveDate"], "%Y-%m-%d"
@@ -221,7 +214,10 @@ class DukeEnergy:
         num_expected_values = (end_date - start_date).days + 1
 
         # Extract temperature data
-        temp = [usage_array[i]["temperatureAvg"] for i in range(num_expected_values)]
+        temp = [
+            usage_array[i]["temperatureAvg"]
+            for i in range(min(num_expected_values, usage_len))
+        ]
         temp_len = len(temp)
 
         # If interval is hourly, multiply the number of values by 24
@@ -251,6 +247,11 @@ class DukeEnergy:
                 else f"{date.month}/{date.strftime('%d/%Y')}"
             )
 
+            # If fewer entries than expected date range, treat remainder as missing
+            if n >= usage_len:
+                missing.append(date)
+                continue
+
             # Skip duplicate dates
             if n > 0 and usage_array[n]["date"] == usage_array[n - 1]["date"]:
                 duplicates += 1
@@ -262,7 +263,7 @@ class DukeEnergy:
                 offset += 1
                 continue
 
-            if n >= usage_len or not float(usage_array[n]["usage"]) > 0:
+            if not float(usage_array[n]["usage"]) > 0:
                 missing.append(date)
                 continue
 
