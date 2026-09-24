@@ -1,0 +1,14 @@
+{
+  "manifest_version": 3,
+  "name": "Duke Energy OAuth Helper",
+  "version": "1.0.1",
+  "description": "Captures Duke Energy mobile OAuth redirects for use with aiodukeenergy library",
+  "permissions": ["webNavigation", "tabs"],
+  "background": {
+    "service_worker": "background.js"
+  },
+  "action": {
+    "default_popup": "popup.html",
+    "default_title": "Duke Energy OAuth Helper"
+  }
+}

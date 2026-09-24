@@ -54,13 +54,28 @@ capture the mobile app's custom redirect URL.
 
 ### Setup
 
-1. Install the Chrome extension:
+1. Add the appropriate extension for your browser:
+
+   #### chrome-extension
 
    - Download the [latest chrome-extension.zip](https://github.com/hunterjm/aiodukeenergy/releases/latest/download/chrome-extension.zip) from releases (or use `./chrome-extension/` from source)
    - Extract the zip file
    - Open Chrome and navigate to `chrome://extensions/`
    - Enable "Developer mode"
    - Click "Load unpacked" and select the extracted folder
+
+   #### safari-extension
+
+   Requires XCode and a free developer account
+
+   - Download the [latest safari-extension.zip](https://github.com/crash0verride11/ha-dukeenergy/releases/latest/download/safari-extension.zip) from releases (or use `./safari-extension/` from source)
+   - Extract the zip file
+   - Open the Xcode project
+   - Go to project settings and set your free developer account as the 'Team' for both Targets (`com.local.duke-energy-oauth-helper` and `com.local.duke-energy-oauth-helper.Extension`). Also ensure 'Signing Certificate' is set to 'Development'
+   - Quit Safari if open and build the extension
+   - Open Safai and enable the extension in Safari settings
+   - Build the extension again
+   - Enable access to all URLs or a specific URL (https://login.duke-energy.com) in the extension settings
 
 2. Run the browser authentication script:
 
