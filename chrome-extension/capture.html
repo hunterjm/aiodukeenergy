@@ -116,6 +116,11 @@
         fill: #1a5276;
       }
 
+      .error-detail {
+        font-family: "Consolas", "Monaco", monospace;
+        color: #c62828;
+      }
+
       .toast {
         position: fixed;
         bottom: 20px;
@@ -167,10 +172,11 @@
           </svg>
         </div>
         <h1>No Authorization Code</h1>
-        <p>
+        <p id="noCodeMessage">
           No code was captured. Please complete the Duke Energy login flow
           first.
         </p>
+        <p id="errorDetail" class="error-detail" style="display: none"></p>
       </div>
     </div>
 
