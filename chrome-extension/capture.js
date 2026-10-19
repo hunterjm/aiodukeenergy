@@ -9,6 +9,15 @@ if (code) {
   document.getElementById("authCode").textContent = masked;
 } else {
   document.getElementById("noCode").style.display = "block";
+  const error = params.get("error");
+  if (error) {
+    const description = params.get("error_description");
+    document.getElementById("noCodeMessage").textContent =
+      "Duke Energy returned an error instead of an authorization code:";
+    const errorDetail = document.getElementById("errorDetail");
+    errorDetail.textContent = description ? `${error}: ${description}` : error;
+    errorDetail.style.display = "block";
+  }
 }
 
 // Copy handler
