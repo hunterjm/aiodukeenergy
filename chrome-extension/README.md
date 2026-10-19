@@ -61,10 +61,13 @@ Duke Energy's mobile app uses Auth0 for authentication with a custom redirect UR
 4. It extracts the `code` and `state` parameters
 5. It redirects you to a capture page showing the extracted data
 
+Duke's login (`login.duke-energy.com`) rejects desktop browsers with `access_denied` after the password step, so the extension also makes Chrome identify as iOS Safari for that one domain (`rules.json`). Requests to every other site are left untouched.
+
 ## Files
 
 - `manifest.json` - Extension configuration
 - `background.js` - Service worker that intercepts redirects
+- `rules.json` - Sends an iOS Safari User-Agent to `login.duke-energy.com`
 - `popup.html` - Extension popup UI
 - `capture.html` - Page displayed after capturing the code
 
