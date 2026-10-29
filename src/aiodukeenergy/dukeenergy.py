@@ -95,8 +95,9 @@ class DukeEnergy:
         if self._accounts and not fresh:
             return self._accounts
 
+        # account-list no longer exists; Duke serves the list from account/list.
         account_list = await self._get_json(
-            _BASE_URL.joinpath("account-list"),
+            _BASE_URL.joinpath("account", "list"),
             {
                 "email": self.email,
                 "internalUserID": self.internal_user_id,
@@ -104,8 +105,19 @@ class DukeEnergy:
             },
         )
 
+        # The new list spells BP with a capital P and leaves out the source IDs
+        # that account-details-v2 and the usage graph still need.
+        related_bp = account_list.get("relatedBpNumber") or account_list.get(
+            "relatedBPNumber"
+        )
         accounts = {}
         for account in account_list["accounts"]:
+            account["srcSysCd"] = account.get("srcSysCd") or "ISU"
+            account["srcAcctId"] = account.get("srcAcctId") or account["accountNumber"]
+            account.setdefault("srcAcctId2", "")
+            account["primaryBpNumber"] = account.get("primaryBpNumber") or account.get(
+                "primaryBPNumber"
+            )
             details = await self._get_json(
                 _BASE_URL.joinpath("account-details-v2"),
                 {
@@ -113,7 +125,7 @@ class DukeEnergy:
                     "srcSysCd": account["srcSysCd"],
                     "srcAcctId": account["srcAcctId"],
                     "primaryBpNumber": account["primaryBpNumber"],
-                    "relatedBpNumber": account_list["relatedBpNumber"],
+                    "relatedBpNumber": related_bp,
                 },
             )
             accounts[account["accountNumber"]] = {
